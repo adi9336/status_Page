@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Organization {
+  id        String     @id @default(cuid())
+  name      String
+  incidents Incident[]
+  services  Service[]
+  users     User[]
+}
+
+model User {
+  id             String       @id @default(cuid())
+  email          String       @unique
+  clerkId        String       @unique
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+}
+
+model Service {
+  id             String        @id @default(cuid())
+  name           String
+  status         ServiceStatus
+  organizationId String
+  incidents      Incident[]
+  organization   Organization  @relation(fields: [organizationId], references: [id])
+}
+
+model Incident {
+  id             String           @id @default(cuid())
+  title          String
+  description    String?
+  status         IncidentStatus
+  serviceId      String
+  createdAt      DateTime         @default(now())
+  organizationId String
+  organization   Organization     @relation(fields: [organizationId], references: [id])
+  service        Service          @relation(fields: [serviceId], references: [id])
+  updates        IncidentUpdate[]
+}
+
+model IncidentUpdate {
+  id         String   @id @default(cuid())
+  content    String
+  incidentId String
+  createdAt  DateTime @default(now())
+  incident   Incident @relation(fields: [incidentId], references: [id])
+}
+
+enum ServiceStatus {
+  OPERATIONAL
+  DEGRADED
+  PARTIAL_OUTAGE
+  MAJOR_OUTAGE
+}
+
+enum IncidentStatus {
+  OPEN
+  RESOLVED
+  SCHEDULED_MAINTENANCE
+} 
