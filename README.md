@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 # Status_Page
 =======
 # TeamStatus – Company Status Page & Incident Dashboard
@@ -130,3 +131,6 @@ MIT
 ---
 
 >>>>>>> a6f498a (First coomit)
+=======
+# status_Page
+>>>>>>> bedd6aba5c32b0158f9f499efdff7d634d773701
