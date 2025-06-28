@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { FaPlus, FaExclamationCircle } from 'react-icons/fa'
 
 interface Service {
   id: string
@@ -19,7 +20,6 @@ interface Incident {
 export default function IncidentsPage() {
   const [incidents, setIncidents] = useState<Incident[]>([])
   const [services, setServices] = useState<Service[]>([])
-
   const [title, setTitle] = useState('')
   const [status, setStatus] = useState('OPEN')
   const [serviceId, setServiceId] = useState('')
@@ -43,7 +43,6 @@ export default function IncidentsPage() {
 
   const createIncident = async () => {
     if (!title.trim() || !serviceId) return
-    
     try {
       await fetch('/api/incidents', {
         method: 'POST',
@@ -61,10 +60,10 @@ export default function IncidentsPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'OPEN': return 'bg-red-500'
-      case 'RESOLVED': return 'bg-green-500'
-      case 'SCHEDULED_MAINTENANCE': return 'bg-blue-500'
-      default: return 'bg-gray-500'
+      case 'OPEN': return 'bg-red-400 text-red-800'
+      case 'RESOLVED': return 'bg-green-400 text-green-800'
+      case 'SCHEDULED_MAINTENANCE': return 'bg-blue-400 text-blue-800'
+      default: return 'bg-gray-200 text-gray-700'
     }
   }
 
@@ -78,104 +77,88 @@ export default function IncidentsPage() {
   }
 
   return (
-    <div className="p-6">
+    <div className="p-4 sm:p-8 bg-gray-100 min-h-screen">
+      {/* Return Button */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">🚨 Manage Incidents</h1>
-        <p className="text-gray-600">Create and track service incidents</p>
+        <Link href="/dashboard" className="inline-block bg-white hover:bg-blue-50 text-blue-600 font-semibold px-4 py-2 rounded-full transition-colors text-sm shadow border border-gray-200">
+          ← Return to Dashboard
+        </Link>
+      </div>
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2"><FaExclamationCircle className="text-red-400" /> Manage Incidents</h1>
+        <p className="text-gray-500 text-base mt-1">Create and track service incidents</p>
       </div>
 
       {/* Create Incident Form */}
-      <div className="bg-white rounded-lg shadow p-6 mb-6">
+      <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
         <h2 className="text-lg font-semibold text-gray-800 mb-4">Create New Incident</h2>
-        
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Incident Title
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Incident Title</label>
             <input
               type="text"
               placeholder="Enter incident title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent text-sm"
+              style={{ color: '#000' }}
             />
           </div>
-
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Status
-            </label>
-            <select 
-              value={status} 
-              onChange={(e) => setStatus(e.target.value)} 
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+            <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+            <select
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent text-sm"
+              style={{ color: '#000' }}
             >
-              <option value="OPEN">🔴 Open</option>
-              <option value="RESOLVED">🟢 Resolved</option>
-              <option value="SCHEDULED_MAINTENANCE">🔵 Scheduled Maintenance</option>
+              <option value="OPEN" style={{ color: '#000' }}>🔴 Open</option>
+              <option value="RESOLVED" style={{ color: '#000' }}>🟢 Resolved</option>
+              <option value="SCHEDULED_MAINTENANCE" style={{ color: '#000' }}>🔵 Scheduled Maintenance</option>
             </select>
           </div>
-
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Service
-            </label>
-            <select 
-              value={serviceId} 
-              onChange={(e) => setServiceId(e.target.value)} 
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+            <label className="block text-sm font-medium text-gray-700 mb-2">Service</label>
+            <select
+              value={serviceId}
+              onChange={(e) => setServiceId(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent text-sm"
+              style={{ color: '#000' }}
             >
-              <option value="">Select Service</option>
+              <option value="" style={{ color: '#000' }}>Select Service</option>
               {services.map((service) => (
-                <option key={service.id} value={service.id}>{service.name}</option>
+                <option key={service.id} value={service.id} style={{ color: '#000' }}>{service.name}</option>
               ))}
             </select>
           </div>
-
-          <button 
-            onClick={createIncident} 
-            className="bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600 transition-colors font-medium"
+          <button
+            onClick={createIncident}
+            className="bg-gradient-to-r from-red-400 to-blue-400 text-white px-6 py-2 rounded-full hover:from-red-500 hover:to-blue-500 transition-colors font-semibold flex items-center gap-2 shadow"
           >
-            Create Incident
+            <FaPlus /> Create Incident
           </button>
         </div>
       </div>
 
       {/* Incidents List */}
-      <div className="bg-white rounded-lg shadow">
-        <div className="p-6 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-800">Current Incidents</h2>
+      <div className="bg-white rounded-2xl shadow-lg">
+        <div className="p-6 border-b border-gray-100">
+          <h2 className="text-lg font-semibold text-gray-800">Recent Incidents</h2>
         </div>
-        
-        <div className="divide-y divide-gray-200">
+        <div className="divide-y divide-gray-100">
           {incidents.length === 0 ? (
-            <div className="p-6 text-center text-gray-500">
-              No incidents found. Create your first incident above.
-            </div>
+            <div className="p-6 text-center text-gray-400 text-base">No incidents found. Create your first incident above.</div>
           ) : (
             incidents.map((incident) => (
-              <div key={incident.id} className="p-6 hover:bg-gray-50 transition-colors">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-3 mb-2">
-                      <div className={`w-3 h-3 rounded-full ${getStatusColor(incident.status)}`}></div>
-                      <h3 className="text-lg font-medium text-gray-800">{incident.title}</h3>
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        incident.status === 'OPEN' ? 'bg-red-100 text-red-800' :
-                        incident.status === 'RESOLVED' ? 'bg-green-100 text-green-800' :
-                        'bg-blue-100 text-blue-800'
-                      }`}>
-                        {getStatusText(incident.status)}
-                      </span>
-                    </div>
-                    
-                    <div className="text-sm text-gray-600 space-y-1">
-                      <p><strong>Service:</strong> {incident.service?.name || 'Unknown'}</p>
-                      <p><strong>Created:</strong> {new Date(incident.createdAt).toLocaleString()}</p>
-                    </div>
-                  </div>
+              <div key={incident.id} className="p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 hover:bg-gray-50 transition-colors">
+                <div className="flex items-center gap-4">
+                  <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(incident.status)} bg-opacity-20`}>{getStatusText(incident.status)}</span>
+                  <span className="font-medium text-gray-800 text-base">{incident.title}</span>
+                  {incident.service && (
+                    <span className="ml-2 px-3 py-1 rounded-full bg-gray-100 text-gray-600 text-xs font-semibold">{incident.service.name}</span>
+                  )}
                 </div>
+                <span className="text-xs text-gray-400">{new Date(incident.createdAt).toLocaleString()}</span>
               </div>
             ))
           )}

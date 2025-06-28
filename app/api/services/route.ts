@@ -4,8 +4,6 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 const orgId = "org_2z6AucumjhZE4b008K1hvAresjG";
 
-export const ORG_ID = orgId;
-
 // GET: List all services for the org
 export async function GET() {
   const services = await prisma.service.findMany({
@@ -33,7 +31,8 @@ export async function POST(req: Request) {
       },
     });
     return NextResponse.json(newService);
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Internal server error';
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 } 
