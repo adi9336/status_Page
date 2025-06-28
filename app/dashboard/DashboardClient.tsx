@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { SignOutButton } from "@clerk/nextjs"
-import { FaCheckCircle, FaExclamationTriangle, FaTimesCircle, FaListAlt, FaCogs, FaBug } from 'react-icons/fa'
+import { FaCheckCircle, FaExclamationTriangle, FaTimesCircle, FaListAlt, FaCogs, FaBug, FaUsers } from 'react-icons/fa'
 import { motion } from 'framer-motion'
 
 export default function DashboardClient() {
@@ -79,6 +79,14 @@ export default function DashboardClient() {
               className="bg-gradient-to-r from-green-400 to-blue-500 text-white px-6 py-2 rounded-full hover:from-green-500 hover:to-blue-600 transition-colors text-center text-sm font-semibold shadow flex items-center gap-2"
             >
               <FaBug className="w-4 h-4" /> View Incidents
+            </Link>
+          </motion.div>
+          <motion.div whileHover={{ scale: 1.03 }}>
+            <Link 
+              href="/dashboard/users" 
+              className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-2 rounded-full hover:from-purple-600 hover:to-pink-600 transition-colors text-center text-sm font-semibold shadow flex items-center gap-2"
+            >
+              <FaUsers className="w-4 h-4" /> Manage Users
             </Link>
           </motion.div>
         </div>

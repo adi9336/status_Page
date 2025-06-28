@@ -95,9 +95,9 @@ export default function ServicesPage() {
           </div>
           <div className="w-full sm:w-auto sm:min-w-48">
             <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
-            <select
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
+            <select 
+              value={status} 
+              onChange={(e) => setStatus(e.target.value)} 
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent text-sm"
               style={{ color: '#000' }}
             >
@@ -107,8 +107,8 @@ export default function ServicesPage() {
               <option value="MAJOR_OUTAGE" style={{ color: '#000' }}>🔴 Major Outage</option>
             </select>
           </div>
-          <button
-            onClick={createService}
+          <button 
+            onClick={createService} 
             className="bg-gradient-to-r from-blue-500 to-green-400 text-white px-6 py-2 rounded-full hover:from-blue-600 hover:to-green-500 transition-colors font-semibold flex items-center gap-2 shadow"
           >
             <FaPlus /> Add Service

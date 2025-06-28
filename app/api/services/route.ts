@@ -1,16 +1,32 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient();
 const orgId = "org_2z6AucumjhZE4b008K1hvAresjG";
+
+// Mock data for services
+const mockServices = [
+  {
+    id: "service_1",
+    name: "Website",
+    status: "OPERATIONAL",
+    organizationId: orgId,
+  },
+  {
+    id: "service_2", 
+    name: "API",
+    status: "OPERATIONAL",
+    organizationId: orgId,
+  },
+  {
+    id: "service_3",
+    name: "Database",
+    status: "DEGRADED",
+    organizationId: orgId,
+  }
+];
 
 // GET: List all services for the org
 export async function GET() {
-  const services = await prisma.service.findMany({
-    where: { organizationId: orgId },
-    orderBy: { id: 'desc' },
-  });
-  return NextResponse.json(services);
+  return NextResponse.json(mockServices);
 }
 
 // POST: Create a service
@@ -23,13 +39,14 @@ export async function POST(req: Request) {
   }
 
   try {
-    const newService = await prisma.service.create({
-      data: {
-        name: body.name,
-        status: body.status,
-        organizationId: orgId,
-      },
-    });
+    const newService = {
+      id: `service_${Date.now()}`,
+      name: body.name,
+      status: body.status,
+      organizationId: orgId,
+    };
+    
+    mockServices.push(newService);
     return NextResponse.json(newService);
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Internal server error';

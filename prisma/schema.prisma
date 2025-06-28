@@ -19,7 +19,32 @@ model User {
   id             String       @id @default(cuid())
   email          String       @unique
   clerkId        String       @unique
+  firstName      String?
+  lastName       String?
+  fullName       String?
+  avatar         String?
+  role           UserRole     @default(MEMBER)
+  isActive       Boolean      @default(true)
   organizationId String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  lastLoginAt    DateTime?
+  lastActivityAt DateTime?
+  
+  // User preferences and settings
+  timezone       String?      @default("UTC")
+  language       String?      @default("en")
+  emailNotifications Boolean  @default(true)
+  pushNotifications Boolean   @default(true)
+  
+  // User activity tracking
+  totalIncidentsCreated Int   @default(0)
+  totalUpdatesPosted    Int   @default(0)
+  lastIncidentCreatedAt DateTime?
+  
+  // Profile completion
+  profileCompleted Boolean    @default(false)
+  
   organization   Organization @relation(fields: [organizationId], references: [id])
 }
 
@@ -51,6 +76,14 @@ model IncidentUpdate {
   incidentId String
   createdAt  DateTime @default(now())
   incident   Incident @relation(fields: [incidentId], references: [id])
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN
+  MANAGER
+  MEMBER
+  VIEWER
 }
 
 enum ServiceStatus {

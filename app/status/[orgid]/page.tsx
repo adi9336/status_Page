@@ -14,6 +14,12 @@ export default async function StatusPage({ params }: { params: Promise<{ orgId: 
       incidents: {
         orderBy: { createdAt: 'desc' },
         take: 5, // only show recent
+        include: {
+          updates: {
+            orderBy: { createdAt: 'desc' },
+            take: 3, // only show 3 most recent updates
+          }
+        }
       },
     },
   });
@@ -42,15 +48,35 @@ export default async function StatusPage({ params }: { params: Promise<{ orgId: 
             </div>
 
             {service.incidents.length > 0 && (
-              <div className="mt-3 sm:mt-4 text-xs sm:text-sm text-red-500">
-                <div className="font-medium mb-1 sm:mb-2">Recent incidents:</div>
-                <ul className="list-disc ml-4 sm:ml-6 space-y-1">
+              <div className="mt-3 sm:mt-4 text-xs sm:text-sm">
+                <div className="font-medium mb-1 sm:mb-2 text-red-500">Recent incidents:</div>
+                <ul className="space-y-2">
                   {service.incidents.map(incident => (
-                    <li key={incident.id} className="text-gray-700">
-                      {incident.title} 
-                      <span className="ml-2 text-xs bg-gray-100 px-2 py-1 rounded">
+                    <li key={incident.id} className="border-l-2 border-red-400 pl-3">
+                      <div className="text-gray-700 font-medium">{incident.title}</div>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-xs bg-gray-100 px-2 py-1 rounded">
                         {incident.status}
                       </span>
+                        <span className="text-xs text-gray-500">
+                          {new Date(incident.createdAt).toLocaleString()}
+                        </span>
+                      </div>
+                      
+                      {/* Show recent updates */}
+                      {incident.updates && incident.updates.length > 0 && (
+                        <div className="mt-2 space-y-1">
+                          <div className="text-xs font-medium text-gray-600">Latest updates:</div>
+                          {incident.updates.map(update => (
+                            <div key={update.id} className="text-xs text-gray-600 bg-gray-50 p-2 rounded">
+                              <div>{update.content}</div>
+                              <div className="text-gray-400 mt-1">
+                                {new Date(update.createdAt).toLocaleString()}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </li>
                   ))}
                 </ul>
