@@ -2,6 +2,7 @@
 
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
+import { prisma } from './lib/prisma';
 
 const isProtectedRoute = createRouteMatcher([
   '/dashboard(.*)',
@@ -10,6 +11,8 @@ const isProtectedRoute = createRouteMatcher([
   '/api/users(.*)',
   '/api/notifications(.*)',
 ]);
+
+const orgId = "org_2z6AucumjhZE4b008K1hvAresjG";
 
 export default clerkMiddleware(async (auth, req) => {
   if (isProtectedRoute(req)) {
@@ -24,10 +27,29 @@ export default clerkMiddleware(async (auth, req) => {
         return NextResponse.redirect(new URL('/sign-in', req.url));
       }
 
-      // User is authenticated with Clerk - allow access
-      // Database user validation will be handled in the API routes
-      console.log('✅ User authenticated with Clerk - allowing access');
-      return NextResponse.next();
+      // Check if user exists in database and is active
+      try {
+        const user = await prisma.user.findFirst({
+          where: {
+            clerkId: userId,
+            organizationId: orgId,
+            isActive: true
+          }
+        });
+
+        if (!user) {
+          console.log('❌ User not found in database or not active - redirecting to not-authorized');
+          return NextResponse.redirect(new URL('/not-authorized', req.url));
+        }
+
+        console.log('✅ User authenticated and authorized - allowing access');
+        return NextResponse.next();
+      } catch (dbError) {
+        console.error('Database error in middleware:', dbError);
+        // If database is unavailable, allow access (fail open for development)
+        console.log('⚠️ Database error - allowing access for development');
+        return NextResponse.next();
+      }
     } catch (error) {
       console.error('Auth middleware error:', error);
       return NextResponse.redirect(new URL('/sign-in', req.url));

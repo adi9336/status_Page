@@ -99,6 +99,7 @@ model Notification {
 }
 
 enum UserRole {
+  MASTER_ADMIN
   SUPER_ADMIN
   ADMIN
   MANAGER

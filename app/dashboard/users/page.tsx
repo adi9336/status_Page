@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { FaUser, FaEdit, FaSave, FaTimes, FaUserShield, FaUserCheck, FaUserSlash, FaSearch, FaFilter, FaPlus } from "react-icons/fa";
+import { FaUser, FaEdit, FaSave, FaTimes, FaUserShield, FaUserCheck, FaUserSlash, FaSearch, FaFilter, FaPlus, FaCrown } from "react-icons/fa";
 import Image from 'next/image';
+import MasterAdminPanel from "../../../components/MasterAdminPanel";
+import { useUser } from "@clerk/nextjs";
 
 interface User {
   id: string;
@@ -27,6 +29,7 @@ interface User {
 }
 
 export default function UsersPage() {
+  const { user } = useUser();
   const [users, setUsers] = useState<User[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [editingUserId, setEditingUserId] = useState<string | null>(null);
@@ -36,12 +39,31 @@ export default function UsersPage() {
   const [roleFilter, setRoleFilter] = useState("ALL");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showMasterAdminPanel, setShowMasterAdminPanel] = useState(false);
+  const [isMasterAdmin, setIsMasterAdmin] = useState(false);
   const [createForm, setCreateForm] = useState({
     email: "",
     firstName: "",
     lastName: "",
     role: "MEMBER",
   });
+
+  // Check if current user is master admin
+  useEffect(() => {
+    const checkMasterAdmin = async () => {
+      if (!user) return;
+      
+      try {
+        const response = await fetch('/api/users/master-admin');
+        setIsMasterAdmin(response.ok);
+      } catch (error) {
+        console.error('Error checking master admin status:', error);
+        setIsMasterAdmin(false);
+      }
+    };
+
+    checkMasterAdmin();
+  }, [user]);
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -201,6 +223,22 @@ export default function UsersPage() {
           <FaUser className="text-blue-400" /> User Management
         </h1>
         <p className="text-gray-500 text-base mt-1">Manage your team members, roles, and access permissions</p>
+        
+        {/* Master Admin Button */}
+        {isMasterAdmin && (
+          <div className="mt-4">
+            <button
+              onClick={() => setShowMasterAdminPanel(true)}
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl"
+            >
+              <FaCrown className="w-5 h-5" />
+              Master Admin Panel
+            </button>
+            <p className="text-sm text-gray-500 mt-2">
+              Full user management with advanced controls
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Search and Filters */}
@@ -466,6 +504,11 @@ export default function UsersPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Master Admin Panel */}
+      {showMasterAdminPanel && (
+        <MasterAdminPanel onClose={() => setShowMasterAdminPanel(false)} />
       )}
     </div>
   );
