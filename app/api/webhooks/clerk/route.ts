@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
         "svix-id": svix_id,
         "svix-timestamp": svix_timestamp,
         "svix-signature": svix_signature,
-      });
+      }) as any;
     } catch (err) {
       return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
     }

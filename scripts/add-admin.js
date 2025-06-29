@@ -16,11 +16,11 @@ async function addAdminUser() {
     // Add your admin user (replace with your actual email)
     const adminUser = await prisma.user.create({
       data: {
-        email: 'adityan8nlearn@gmail.com',
-        firstName: 'Aditya_N8N',
-        lastName: '',
-        fullName: 'Aditya_N8N',
-        role: 'MEMBER',
+        email: 'newuser@example.com',
+        firstName: 'Admin',
+        lastName: 'User',
+        fullName: 'Admin User',
+        role: 'SUPER_ADMIN',
         organizationId: organization.id,
         clerkId: 'user_2zBaEl7ZVo6IMj9KIbdYoyufyA',
         isActive: true

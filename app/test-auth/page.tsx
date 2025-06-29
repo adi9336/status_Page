@@ -1,5 +1,16 @@
 import { auth } from "@clerk/nextjs/server";
 
+interface ClerkWebhookEvent {
+  data: {
+    id: string;
+    email_addresses: { email_address: string }[];
+    first_name?: string;
+    last_name?: string;
+    // ...other fields you expect
+  };
+  // ...other fields if needed
+}
+
 export default async function TestAuthPage() {
   try {
     const session = await auth();
