@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { FaPlus, FaExclamationCircle, FaChevronDown, FaChevronUp, FaComment, FaEdit, FaSave, FaTimes } from 'react-icons/fa'
 import IncidentUpdates from '../../../components/IncidentUpdates'
+import { useRouter } from 'next/navigation'
 
 interface Service {
   id: string
@@ -39,6 +40,7 @@ export default function IncidentsPage() {
     status: 'OPEN' as string,
     serviceId: ''
   })
+  const router = useRouter()
 
   const fetchData = async () => {
     try {
@@ -158,9 +160,12 @@ export default function IncidentsPage() {
     <div className="p-4 sm:p-8 bg-gray-100 min-h-screen">
       {/* Return Button */}
       <div className="mb-6">
-        <Link href="/dashboard" className="inline-block bg-white hover:bg-blue-50 text-blue-600 font-semibold px-4 py-2 rounded-full transition-colors text-sm shadow border border-gray-200">
+        <button
+          onClick={() => router.push('/')}
+          className="inline-block bg-white hover:bg-blue-50 text-blue-600 font-semibold px-4 py-2 rounded-full transition-colors text-sm shadow border border-gray-200"
+        >
           ← Return to Dashboard
-        </Link>
+        </button>
       </div>
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2"><FaExclamationCircle className="text-red-400" /> Manage Incidents</h1>

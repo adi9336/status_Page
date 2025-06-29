@@ -6,6 +6,7 @@ import { SignOutButton } from "@clerk/nextjs"
 import { FaCheckCircle, FaExclamationTriangle, FaTimesCircle, FaListAlt, FaCogs, FaBug, FaUsers, FaClock, FaBell, FaChartLine } from 'react-icons/fa'
 import { motion } from 'framer-motion'
 import NotificationBell from '../../components/NotificationBell'
+import { useRouter } from 'next/navigation'
 
 interface Service {
   id: string;
@@ -61,6 +62,7 @@ export default function DashboardClient() {
     recentIncidents: []
   });
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   const fetchDashboardData = async () => {
     try {
@@ -139,11 +141,9 @@ export default function DashboardClient() {
 
   return (
     <div className="p-4 sm:p-8 bg-gray-100 min-h-screen">
-      {/* Top Bar with Return, Notifications, and Sign Out */}
+      {/* Top Bar with Notifications and Sign Out (Return to Home removed) */}
       <div className="flex justify-between items-center mb-6">
-        <Link href="/" className="inline-block bg-white hover:bg-blue-50 text-blue-600 font-semibold px-4 py-2 rounded-full transition-colors text-sm shadow border border-gray-200">
-          ← Return to Home
-        </Link>
+        {/* Removed Return to Home button */}
         <div className="flex items-center gap-4">
           <NotificationBell />
           <SignOutButton>

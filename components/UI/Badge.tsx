@@ -1,6 +1,12 @@
-import React from 'react';
+import React, { ReactNode, HTMLAttributes } from 'react';
 
-export function Badge({ children, className = '', variant = 'default', ...props }) {
+interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
+  children: ReactNode;
+  className?: string;
+  variant?: 'default' | 'secondary';
+}
+
+export function Badge({ children, className = '', variant = 'default', ...props }: BadgeProps) {
   const base = 'inline-block rounded-full px-3 py-1 font-semibold text-sm';
   const color =
     variant === 'secondary'

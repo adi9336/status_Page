@@ -1,12 +1,13 @@
 'use client'
 
 import Link from 'next/link'
-import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from '@clerk/nextjs'
+import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton, useAuth } from '@clerk/nextjs'
 import { useState, useEffect } from 'react'
 import { Button } from "@/components/UI/Button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/UI/Card";
 import { Badge } from "@/components/UI/Badge";
 import { Activity } from "lucide-react";
+import { useRouter } from 'next/navigation';
 
 interface StatusData {
   totalIncidents: number;
@@ -22,6 +23,8 @@ export default function Home() {
     services: [],
     incidents: []
   })
+  const { isSignedIn } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     const fetchStatusData = async () => {
@@ -45,6 +48,12 @@ export default function Home() {
     }
     fetchStatusData()
   }, [])
+
+  useEffect(() => {
+    if (isSignedIn) {
+      router.push('/dashboard');
+    }
+  }, [isSignedIn, router]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/10 via-white to-primary/5 font-sans">

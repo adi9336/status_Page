@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { FaChartLine, FaChartBar, FaChartPie, FaCalendar, FaClock, FaExclamationTriangle, FaCheckCircle, FaUsers, FaServer } from "react-icons/fa";
 import { motion } from "framer-motion";
+import { useRouter } from 'next/navigation';
 
 interface AnalyticsData {
   totalIncidents: number;
@@ -40,6 +41,7 @@ export default function AnalyticsPage() {
     recentActivity: []
   });
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   const fetchAnalytics = async () => {
     setLoading(true);
@@ -143,9 +145,12 @@ export default function AnalyticsPage() {
   return (
     <div className="p-4 sm:p-8 bg-gray-100 min-h-screen">
       <div className="mb-6">
-        <Link href="/dashboard" className="inline-block bg-white hover:bg-blue-50 text-blue-600 font-semibold px-4 py-2 rounded-full transition-colors text-sm shadow border border-gray-200">
-          ← Return to Dashboard
-        </Link>
+        <button
+          onClick={() => router.push('/')}
+          className="inline-block bg-white hover:bg-blue-50 text-blue-600 font-semibold px-4 py-2 rounded-full transition-colors text-sm shadow border border-gray-200"
+        >
+          ← Return to Home
+        </button>
       </div>
 
       <div className="mb-8">

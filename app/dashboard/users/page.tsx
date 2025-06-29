@@ -6,6 +6,7 @@ import { FaUser, FaEdit, FaSave, FaTimes, FaUserShield, FaUserCheck, FaUserSlash
 import Image from 'next/image';
 import MasterAdminPanel from "../../../components/MasterAdminPanel";
 import { useUser } from "@clerk/nextjs";
+import { useRouter } from 'next/navigation';
 
 interface User {
   id: string;
@@ -49,6 +50,7 @@ export default function UsersPage() {
     lastName: "",
     role: "MEMBER",
   });
+  const router = useRouter();
 
   // Fetch current user's role from the API
   useEffect(() => {
@@ -240,9 +242,12 @@ export default function UsersPage() {
   return (
     <div className="glass-card p-4 sm:p-8 min-h-screen">
       <div className="mb-6">
-        <Link href="/dashboard" className="inline-block bg-white hover:bg-blue-50 text-blue-600 font-semibold px-4 py-2 rounded-full transition-colors text-sm shadow border border-gray-200">
-          ← Return to Dashboard
-        </Link>
+        <button
+          onClick={() => router.push('/')}
+          className="inline-block bg-white hover:bg-blue-50 text-blue-600 font-semibold px-4 py-2 rounded-full transition-colors text-sm shadow border border-gray-200"
+        >
+          ← Return to Home
+        </button>
       </div>
       
       <div className="mb-8">

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { FaPlus, FaServer } from 'react-icons/fa'
+import { useRouter } from 'next/navigation'
 
 interface Service {
   id: string
@@ -14,6 +15,7 @@ export default function ServicesPage() {
   const [services, setServices] = useState<Service[]>([])
   const [name, setName] = useState('')
   const [status, setStatus] = useState('OPERATIONAL')
+  const router = useRouter()
 
   const fetchServices = async () => {
     try {
@@ -69,9 +71,12 @@ export default function ServicesPage() {
     <div className="p-4 sm:p-8 bg-gray-100 min-h-screen">
       {/* Return Button */}
       <div className="mb-6">
-        <Link href="/dashboard" className="inline-block bg-white hover:bg-blue-50 text-blue-600 font-semibold px-4 py-2 rounded-full transition-colors text-sm shadow border border-gray-200">
+        <button
+          onClick={() => router.push('/')}
+          className="inline-block bg-white hover:bg-blue-50 text-blue-600 font-semibold px-4 py-2 rounded-full transition-colors text-sm shadow border border-gray-200"
+        >
           ← Return to Dashboard
-        </Link>
+        </button>
       </div>
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2"><FaServer className="text-blue-500" /> Manage Services</h1>
