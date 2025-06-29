@@ -2,14 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
 :root {
   --background: #ffffff;
   --foreground: #000000;
 }
 
 body {
-  color: #000000;
-  background: var(--background);
+  @apply bg-gradient-to-br from-primary/10 via-white to-primary/5 min-h-screen font-sans text-gray-900;
+  font-family: 'Poppins', 'Inter', sans-serif;
 }
 
 * {
@@ -42,4 +44,24 @@ input, textarea, select {
 /* Ensure buttons have proper contrast */
 button {
   color: inherit;
+}
+
+.glass-card {
+  @apply bg-glass backdrop-blur-glass shadow-glass rounded-2xl border border-white/30;
+}
+
+.glass-modal {
+  @apply bg-glass backdrop-blur-glass shadow-2xl rounded-2xl border border-white/30;
+}
+
+.glass-panel {
+  @apply bg-glass backdrop-blur-glass shadow-glass rounded-xl border border-white/20;
+}
+
+input, select, textarea {
+  @apply bg-white/60 backdrop-blur-glass rounded-lg border border-primary/20 px-4 py-2 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition;
+}
+
+button {
+  @apply rounded-full font-semibold shadow-lg transition-all duration-200;
 }

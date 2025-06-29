@@ -42,12 +42,12 @@ export default function IncidentsPage() {
 
   const fetchData = async () => {
     try {
-      const [iRes, sRes] = await Promise.all([
-        fetch('/api/incidents'),
-        fetch('/api/services'),
-      ])
-      setIncidents(await iRes.json())
-      setServices(await sRes.json())
+    const [iRes, sRes] = await Promise.all([
+      fetch('/api/incidents'),
+      fetch('/api/services'),
+    ])
+    setIncidents(await iRes.json())
+    setServices(await sRes.json())
     } catch (error) {
       console.error('Failed to fetch data:', error)
     }
@@ -60,15 +60,15 @@ export default function IncidentsPage() {
   const createIncident = async () => {
     if (!title.trim() || !serviceId) return
     try {
-      await fetch('/api/incidents', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, status, serviceId }),
-      })
-      setTitle('')
+    await fetch('/api/incidents', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title, status, serviceId }),
+    })
+    setTitle('')
       setStatus('OPEN')
       setServiceId('')
-      fetchData()
+    fetchData()
     } catch (error) {
       console.error('Failed to create incident:', error)
     }
@@ -173,11 +173,11 @@ export default function IncidentsPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Incident Title</label>
-            <input
-              type="text"
+      <input
+        type="text"
               placeholder="Enter incident title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent text-sm"
               style={{ color: '#000' }}
             />
@@ -250,7 +250,7 @@ export default function IncidentsPage() {
                           <option value="OPEN" style={{ color: '#000' }}>🔴 Open</option>
                           <option value="RESOLVED" style={{ color: '#000' }}>🟢 Resolved</option>
                           <option value="SCHEDULED_MAINTENANCE" style={{ color: '#000' }}>🔵 Scheduled Maintenance</option>
-                        </select>
+      </select>
                         <select
                           value={editForm.serviceId}
                           onChange={(e) => setEditForm({ ...editForm, serviceId: e.target.value })}
@@ -260,8 +260,8 @@ export default function IncidentsPage() {
                           <option value="" style={{ color: '#000' }}>Select Service</option>
                           {services.map((service) => (
                             <option key={service.id} value={service.id} style={{ color: '#000' }}>{service.name}</option>
-                          ))}
-                        </select>
+        ))}
+      </select>
                         <button
                           onClick={() => saveIncident(incident.id)}
                           className="text-green-600 hover:text-green-800 p-1"
@@ -317,7 +317,7 @@ export default function IncidentsPage() {
                       className="text-gray-400 hover:text-gray-600 transition-colors"
                     >
                       {expandedIncidents.has(incident.id) ? <FaChevronUp /> : <FaChevronDown />}
-                    </button>
+      </button>
                   </div>
                 </div>
                 

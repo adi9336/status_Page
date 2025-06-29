@@ -3,266 +3,112 @@
 import Link from 'next/link'
 import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from '@clerk/nextjs'
 import { useState, useEffect } from 'react'
+import { Button } from "@/components/UI/Button";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/UI/Card";
+import { Badge } from "@/components/UI/Badge";
+import { Activity } from "lucide-react";
+
+interface StatusData {
+  totalIncidents: number;
+  totalServices: number;
+  services: Array<{ id: string; name: string; status: string; description?: string }>;
+  incidents: Array<{ id: string; title: string; description?: string; createdAt: string }>;
+}
 
 export default function Home() {
-  const [statusData, setStatusData] = useState<{
-    totalIncidents: number,
-    totalServices: number,
-    services: Array<{ id: string; name: string; status: string; description?: string }>,
-    incidents: Array<{ id: string; title: string; description?: string; createdAt: string }>
-  }>({
+  const [statusData, setStatusData] = useState<StatusData>({
     totalIncidents: 0,
     totalServices: 0,
     services: [],
     incidents: []
   })
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-
-  const fetchStatusData = async () => {
-    try {
-      const [servicesRes, incidentsRes] = await Promise.all([
-        fetch('/api/services', { cache: 'no-store' }),
-        fetch('/api/incidents', { cache: 'no-store' })
-      ])
-      if (!servicesRes.ok || !incidentsRes.ok) {
-        throw new Error('Network response was not ok')
-      }
-      const services = await servicesRes.json()
-      const incidents = await incidentsRes.json()
-      setStatusData({
-        totalIncidents: Array.isArray(incidents) ? incidents.length : 0,
-        totalServices: Array.isArray(services) ? services.length : 0,
-        services: Array.isArray(services) ? services : [],
-        incidents: Array.isArray(incidents) ? incidents : []
-      })
-    } catch (error) {
-      console.error('Failed to fetch status data:', error)
-      setStatusData({
-        totalIncidents: 0,
-        totalServices: 0,
-        services: [],
-        incidents: []
-      })
-    }
-  }
 
   useEffect(() => {
+    const fetchStatusData = async () => {
+      try {
+        const [servicesRes, incidentsRes] = await Promise.all([
+          fetch('/api/services', { cache: 'no-store' }),
+          fetch('/api/incidents', { cache: 'no-store' })
+        ])
+        if (!servicesRes.ok || !incidentsRes.ok) throw new Error('Network response was not ok')
+        const services = await servicesRes.json()
+        const incidents = await incidentsRes.json()
+        setStatusData({
+          totalIncidents: Array.isArray(incidents) ? incidents.length : 0,
+          totalServices: Array.isArray(services) ? services.length : 0,
+          services: Array.isArray(services) ? services : [],
+          incidents: Array.isArray(incidents) ? incidents : []
+        })
+      } catch {
+        setStatusData({ totalIncidents: 0, totalServices: 0, services: [], incidents: [] })
+      }
+    }
     fetchStatusData()
-    const interval = setInterval(fetchStatusData, 30000)
-    return () => clearInterval(interval)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'operational': return 'bg-green-500'
-      case 'degraded': return 'bg-yellow-500'
-      case 'down': return 'bg-red-500'
-      default: return 'bg-gray-400'
-    }
-  }
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'operational': return 'Operational'
-      case 'degraded': return 'Degraded'
-      case 'down': return 'Down'
-      default: return 'Unknown'
-    }
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
+    <div className="min-h-screen bg-gradient-to-br from-primary/10 via-white to-primary/5 font-sans">
       {/* Navbar */}
-      <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-              </div>
-              <span className="font-bold text-lg text-gray-900 tracking-tight">StatusPage</span>
-            </div>
-            
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-8">
-              <a href="#status" className="text-gray-700 hover:text-blue-600 text-sm font-medium">Status</a>
-              <a href="#team" className="text-gray-700 hover:text-blue-600 text-sm font-medium">Team</a>
-              <a href="#support" className="text-gray-700 hover:text-blue-600 text-sm font-medium">Support</a>
-            </div>
-            
-            {/* Desktop Auth Buttons */}
-            <div className="hidden md:flex items-center space-x-4">
-              <SignedOut>
-                <SignInButton mode="modal">
-                  <button className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Sign In</button>
-                </SignInButton>
-                <SignUpButton mode="modal">
-                  <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium">Join Team</button>
-                </SignUpButton>
-              </SignedOut>
-              <SignedIn>
-                <UserButton afterSignOutUrl="/" />
-                <Link href="/dashboard" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium">Dashboard</Link>
-              </SignedIn>
-            </div>
-
-            {/* Mobile menu button */}
-            <div className="md:hidden">
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="text-gray-700 hover:text-blue-600 p-2"
-                aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
-                aria-expanded={mobileMenuOpen}
-                aria-controls="mobile-menu"
-                type="button"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  {mobileMenuOpen ? (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  ) : (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                  )}
-                </svg>
-              </button>
-            </div>
-          </div>
-
-          {/* Mobile Navigation Menu */}
-          {mobileMenuOpen && (
-            <div id="mobile-menu" className="md:hidden border-t border-gray-200 py-4">
-              <div className="flex flex-col space-y-4">
-                <a href="#status" className="text-gray-700 hover:text-blue-600 text-sm font-medium px-4">Status</a>
-                <a href="#team" className="text-gray-700 hover:text-blue-600 text-sm font-medium px-4">Team</a>
-                <a href="#support" className="text-gray-700 hover:text-blue-600 text-sm font-medium px-4">Support</a>
-                <div className="border-t border-gray-200 pt-4 px-4">
-                  <SignedOut>
-                    <div className="flex flex-col space-y-2">
-                      <SignInButton mode="modal">
-                        <button className="text-gray-700 hover:text-blue-600 text-sm font-medium text-left">Sign In</button>
-                      </SignInButton>
-                      <SignUpButton mode="modal">
-                        <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium">Join Team</button>
-                      </SignUpButton>
-                    </div>
-                  </SignedOut>
-                  <SignedIn>
-                    <div className="flex flex-col space-y-2">
-                      <UserButton afterSignOutUrl="/" />
-                      <Link href="/dashboard" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium text-center">Dashboard</Link>
-                    </div>
-                  </SignedIn>
-                </div>
-              </div>
-            </div>
-          )}
+      <header className="fixed top-0 left-0 w-full h-16 flex items-center justify-between px-6 lg:px-12 bg-white/60 backdrop-blur-glass border-b border-white/30 z-50">
+        <div className="flex items-center gap-2">
+          <Activity className="h-6 w-6 text-primary" />
+          <span className="text-lg font-bold text-primary">Statusly</span>
         </div>
-      </nav>
+        <div className="flex items-center gap-2">
+          <SignedOut>
+            <SignInButton mode="modal">
+              <Button className="bg-primary text-white px-5 py-2 rounded-full font-semibold shadow-lg">Dashboard</Button>
+            </SignInButton>
+          </SignedOut>
+          <SignedIn>
+            <Link href="/dashboard">
+              <Button className="bg-primary text-white px-5 py-2 rounded-full font-semibold shadow-lg">Dashboard</Button>
+            </Link>
+            <UserButton afterSignOutUrl="/" />
+          </SignedIn>
+        </div>
+      </header>
 
       {/* Hero Section */}
-      <section className="py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-3xl mx-auto text-center">
-          <span className="inline-block mb-4 px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">For Teams & Organizations</span>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight">Team Status Dashboard</h1>
-          <p className="text-base sm:text-lg text-gray-600 mb-6 sm:mb-8 max-w-2xl mx-auto">Monitor your company&apos;s services and incidents in real time. Empower your team with transparency and control.</p>
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-            <SignedOut>
-              <SignUpButton mode="modal">
-                <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 sm:px-8 py-3 rounded-lg text-base sm:text-lg font-semibold transition-colors shadow-lg">Get Started</button>
-              </SignUpButton>
-            </SignedOut>
-            <SignedIn>
-              <Link href="/dashboard" className="bg-blue-600 hover:bg-blue-700 text-white px-6 sm:px-8 py-3 rounded-lg text-base sm:text-lg font-semibold transition-colors shadow-lg">Go to Dashboard</Link>
-            </SignedIn>
-          </div>
+      <main className="flex flex-col items-center justify-center px-4 py-16 md:py-24" style={{ paddingTop: '4rem' }}>
+        <div className="max-w-2xl w-full flex flex-col items-center text-center gap-4">
+          <Badge variant="secondary" className="mb-2">For Teams &amp; Organizations</Badge>
+          <h1 className="text-4xl md:text-5xl font-extrabold text-primary drop-shadow-lg mb-2">Team Status Dashboard</h1>
+          <p className="text-lg text-gray-700 mb-6">Monitor your company's services and incidents in real time. Empower your team with transparency and control.</p>
+          <SignedOut>
+            <SignInButton mode="modal">
+              <Button className="bg-primary text-white px-8 py-3 rounded-full text-lg font-bold shadow-lg">Go to Dashboard</Button>
+            </SignInButton>
+          </SignedOut>
+          <SignedIn>
+            <Link href="/dashboard">
+              <Button className="bg-primary text-white px-8 py-3 rounded-full text-lg font-bold shadow-lg">Go to Dashboard</Button>
+            </Link>
+          </SignedIn>
         </div>
-      </section>
 
-      {/* Public Status Area */}
-      <section id="status" className="py-12 sm:py-16 bg-white border-t border-b border-gray-100">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-10">
-            <div className="bg-white p-4 sm:p-6 rounded-lg shadow border flex flex-col items-center">
-              <span className="text-gray-500 text-sm">Total Services</span>
-              <span className="text-2xl sm:text-3xl font-bold text-blue-700 mt-2">{statusData.totalServices}</span>
-            </div>
-            <div className="bg-white p-4 sm:p-6 rounded-lg shadow border flex flex-col items-center">
-              <span className="text-gray-500 text-sm">Active Incidents</span>
-              <span className="text-2xl sm:text-3xl font-bold text-red-600 mt-2">{statusData.totalIncidents}</span>
-            </div>
-            <div className="bg-white p-4 sm:p-6 rounded-lg shadow border flex flex-col items-center sm:col-span-2 lg:col-span-1">
-              <span className="text-gray-500 text-sm">Uptime</span>
-              <span className="text-2xl sm:text-3xl font-bold text-green-600 mt-2">
-                {statusData.totalServices > 0 ? Math.round(((statusData.services.filter((s) => s.status === 'operational').length / statusData.totalServices) * 100)) : 0}%
-              </span>
-            </div>
-          </div>
-
-          {/* Service Status Grid */}
-          <div className="mb-8 sm:mb-10">
-            <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">Service Status</h3>
-            {statusData.services.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-                {statusData.services.map((service) => (
-                  <div key={service.id} className="p-3 sm:p-4 border rounded-lg bg-gray-50 flex flex-col gap-2">
-                    <div className="flex items-center justify-between">
-                      <span className="font-medium text-gray-900 text-sm sm:text-base">{service.name}</span>
-                      <span className={`flex items-center gap-1 sm:gap-2 text-xs sm:text-sm font-medium ${getStatusColor(service.status)} text-white px-2 py-1 rounded-full`}>
-                        <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-white/70 inline-block"></span>
-                        {getStatusText(service.status)}
-                      </span>
-                    </div>
-                    {service.description && (
-                      <span className="text-xs text-gray-500">{service.description}</span>
-                    )}
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center text-gray-400 py-8">No services found.</div>
-            )}
-          </div>
-
-          {/* Recent Incidents Timeline */}
-          <div>
-            <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">Recent Incidents</h3>
-            {statusData.incidents.length > 0 ? (
-              <ul className="space-y-3 sm:space-y-4">
-                {statusData.incidents.slice(0, 5).map((incident) => (
-                  <li key={incident.id} className="bg-white border-l-4 border-red-500 p-3 sm:p-4 rounded shadow-sm">
-                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0">
-                      <span className="font-medium text-gray-900 text-sm sm:text-base">{incident.title}</span>
-                      <span className="text-xs text-gray-500">{new Date(incident.createdAt).toLocaleString()}</span>
-                    </div>
-                    {incident.description && (
-                      <div className="text-sm text-gray-600 mt-1">{incident.description}</div>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <div className="text-center text-gray-400 py-8">No recent incidents.</div>
-            )}
-          </div>
+        {/* Stats Row */}
+        <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-3 gap-6 mt-16">
+          <Card className="glass-panel flex flex-col items-center py-8">
+            <div className="text-sm text-gray-500 mb-2">Total Services</div>
+            <div className="text-4xl font-bold text-primary">{statusData.totalServices}</div>
+          </Card>
+          <Card className="glass-panel flex flex-col items-center py-8">
+            <div className="text-sm text-gray-500 mb-2">Active Incidents</div>
+            <div className="text-4xl font-bold text-primary">{statusData.totalIncidents}</div>
+          </Card>
+          <Card className="glass-panel flex flex-col items-center py-8">
+            <div className="text-sm text-gray-500 mb-2">Uptime</div>
+            <div className="text-4xl font-bold text-primary">0%</div>
+          </Card>
         </div>
-      </section>
 
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-8 mt-12 sm:mt-16">
-        <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center">
-          <div className="flex items-center mb-4 sm:mb-0">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center mr-2">
-              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
-            </div>
-            <span className="font-bold text-lg">TeamStatus</span>
-          </div>
-          <div className="text-gray-400 text-sm text-center sm:text-left">© 2024 TeamStatus. All rights reserved.</div>
+        {/* Service Status Section Title */}
+        <div className="w-full max-w-4xl mt-16 mb-4">
+          <h2 className="text-2xl font-bold text-primary">Service Status</h2>
         </div>
-      </footer>
+        {/* You can add a service status table or cards here if needed */}
+      </main>
     </div>
   )
 } 

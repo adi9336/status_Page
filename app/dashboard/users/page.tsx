@@ -26,6 +26,7 @@ interface User {
   lastLoginAt?: string;
   lastActivityAt?: string;
   lastIncidentCreatedAt?: string;
+  clerkId: string;
 }
 
 export default function UsersPage() {
@@ -41,12 +42,29 @@ export default function UsersPage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showMasterAdminPanel, setShowMasterAdminPanel] = useState(false);
   const [isMasterAdmin, setIsMasterAdmin] = useState(false);
+  const [userRole, setUserRole] = useState<string | null>(null);
   const [createForm, setCreateForm] = useState({
     email: "",
     firstName: "",
     lastName: "",
     role: "MEMBER",
   });
+
+  // Fetch current user's role from the API
+  useEffect(() => {
+    const fetchCurrentUserRole = async () => {
+      if (!user) return;
+      try {
+        const res = await fetch("/api/users");
+        const allUsers = await res.json();
+        const currentUser = allUsers.find((u: User) => u.clerkId === user.id);
+        setUserRole(currentUser?.role || null);
+      } catch (error) {
+        setUserRole(null);
+      }
+    };
+    fetchCurrentUserRole();
+  }, [user]);
 
   // Check if current user is master admin
   useEffect(() => {
@@ -210,8 +228,17 @@ export default function UsersPage() {
     }
   };
 
+  if (userRole && !["ADMIN", "SUPER_ADMIN", "MASTER_ADMIN"].includes(userRole)) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen">
+        <h1 className="text-2xl font-bold text-red-600 mb-4">Not Authorized</h1>
+        <p className="text-gray-600">You do not have permission to view this page.</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="p-4 sm:p-8 bg-gray-100 min-h-screen">
+    <div className="glass-card p-4 sm:p-8 min-h-screen">
       <div className="mb-6">
         <Link href="/dashboard" className="inline-block bg-white hover:bg-blue-50 text-blue-600 font-semibold px-4 py-2 rounded-full transition-colors text-sm shadow border border-gray-200">
           ← Return to Dashboard
@@ -229,7 +256,7 @@ export default function UsersPage() {
           <div className="mt-4">
             <button
               onClick={() => setShowMasterAdminPanel(true)}
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl"
+              className="inline-flex items-center gap-2 bg-primary hover:bg-primary/80 text-white font-semibold px-6 py-3 rounded-full shadow-2xl hover:shadow-2xl transition-all duration-200 border border-primary"
             >
               <FaCrown className="w-5 h-5" />
               Master Admin Panel
@@ -242,7 +269,7 @@ export default function UsersPage() {
       </div>
 
       {/* Search and Filters */}
-      <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+      <div className="bg-white/60 backdrop-blur-glass rounded-2xl shadow-lg p-6 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {/* Search */}
           <div className="relative">
@@ -252,7 +279,7 @@ export default function UsersPage() {
               placeholder="Search users..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+              className="bg-white/60 backdrop-blur-glass rounded-lg border border-primary/20 px-4 py-2 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
             />
           </div>
 
@@ -261,7 +288,7 @@ export default function UsersPage() {
             <select
               value={roleFilter}
               onChange={(e) => setRoleFilter(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+              className="bg-white/60 backdrop-blur-glass rounded-lg border border-primary/20 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
             >
               <option value="ALL">All Roles</option>
               <option value="SUPER_ADMIN">Super Admin</option>
@@ -277,7 +304,7 @@ export default function UsersPage() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+              className="bg-white/60 backdrop-blur-glass rounded-lg border border-primary/20 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
             >
               <option value="ALL">All Status</option>
               <option value="ACTIVE">Active</option>
@@ -289,7 +316,7 @@ export default function UsersPage() {
           <div>
             <button
               onClick={() => setShowCreateModal(true)}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg transition-colors flex items-center justify-center gap-2"
+              className="w-full bg-primary hover:bg-primary/80 text-white font-semibold px-4 py-2 rounded-full transition-colors flex items-center justify-center gap-2"
             >
               <FaPlus className="w-4 h-4" />
               Add User
@@ -299,7 +326,7 @@ export default function UsersPage() {
       </div>
 
       {/* Users Table */}
-      <div className="bg-white rounded-2xl shadow-lg p-6">
+      <div className="bg-white/60 backdrop-blur-glass rounded-2xl shadow-lg p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-gray-800">Team Members ({filteredUsers.length})</h2>
           <div className="text-sm text-gray-500">
@@ -350,7 +377,7 @@ export default function UsersPage() {
                         <select
                           value={editForm.role}
                           onChange={(e) => setEditForm({ ...editForm, role: e.target.value })}
-                          className="border border-gray-300 rounded px-2 py-1 text-sm"
+                          className="bg-white/60 backdrop-blur-glass rounded-lg border border-primary/20 px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
                         >
                           <option value="SUPER_ADMIN">Super Admin</option>
                           <option value="ADMIN">Admin</option>
@@ -380,7 +407,7 @@ export default function UsersPage() {
                         <>
                           <button
                             onClick={() => saveUser(user.id)}
-                            className="text-green-600 hover:text-green-800 p-1"
+                            className="text-primary hover:text-primary/80 p-1"
                             title="Save"
                           >
                             <FaSave className="w-4 h-4" />
@@ -397,7 +424,7 @@ export default function UsersPage() {
                         <>
                           <button
                             onClick={() => startEditing(user)}
-                            className="text-blue-600 hover:text-blue-800 p-1"
+                            className="text-primary hover:text-primary/80 p-1"
                             title="Edit"
                           >
                             <FaEdit className="w-4 h-4" />
@@ -424,7 +451,7 @@ export default function UsersPage() {
 
       {/* Create User Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="glass-modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-2xl p-6 w-full max-w-md mx-4">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-800">Add New User</h3>
@@ -443,7 +470,7 @@ export default function UsersPage() {
                   type="email"
                   value={createForm.email}
                   onChange={(e) => setCreateForm({ ...createForm, email: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+                  className="bg-white/60 backdrop-blur-glass rounded-lg border border-primary/20 px-4 py-2 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
                   placeholder="user@example.com"
                 />
               </div>
@@ -455,7 +482,7 @@ export default function UsersPage() {
                     type="text"
                     value={createForm.firstName}
                     onChange={(e) => setCreateForm({ ...createForm, firstName: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+                    className="bg-white/60 backdrop-blur-glass rounded-lg border border-primary/20 px-4 py-2 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
                     placeholder="John"
                   />
                 </div>
@@ -466,7 +493,7 @@ export default function UsersPage() {
                     type="text"
                     value={createForm.lastName}
                     onChange={(e) => setCreateForm({ ...createForm, lastName: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+                    className="bg-white/60 backdrop-blur-glass rounded-lg border border-primary/20 px-4 py-2 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
                     placeholder="Doe"
                   />
                 </div>
@@ -477,7 +504,7 @@ export default function UsersPage() {
                 <select
                   value={createForm.role}
                   onChange={(e) => setCreateForm({ ...createForm, role: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+                  className="bg-white/60 backdrop-blur-glass rounded-lg border border-primary/20 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
                 >
                   <option value="MEMBER">Member</option>
                   <option value="MANAGER">Manager</option>
@@ -490,14 +517,14 @@ export default function UsersPage() {
             <div className="flex gap-3 mt-6">
               <button
                 onClick={() => setShowCreateModal(false)}
-                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-full hover:bg-gray-50 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={createUser}
                 disabled={loading || !createForm.email}
-                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 px-4 py-2 bg-primary hover:bg-primary/80 text-white rounded-full hover:shadow-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? "Creating..." : "Create User"}
               </button>
