@@ -3,7 +3,7 @@ import { prisma } from "../../../lib/prisma";
 
 export async function GET() {
   try {
-    const notifications = await prisma.notification.findMany({
+    const notifications = await prisma.notifications.findMany({
       orderBy: { createdAt: "desc" },
       take: 50, // Limit to last 50 notifications
     });
