@@ -5,7 +5,12 @@ import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from '@cl
 import { useState, useEffect } from 'react'
 
 export default function Home() {
-  const [statusData, setStatusData] = useState({
+  const [statusData, setStatusData] = useState<{
+    totalIncidents: number,
+    totalServices: number,
+    services: Array<{ id: string; name: string; status: string; description?: string }>,
+    incidents: Array<{ id: string; title: string; description?: string; createdAt: string }>
+  }>({
     totalIncidents: 0,
     totalServices: 0,
     services: [],
@@ -16,19 +21,28 @@ export default function Home() {
   const fetchStatusData = async () => {
     try {
       const [servicesRes, incidentsRes] = await Promise.all([
-        fetch('/api/services'),
-        fetch('/api/incidents')
+        fetch('/api/services', { cache: 'no-store' }),
+        fetch('/api/incidents', { cache: 'no-store' })
       ])
+      if (!servicesRes.ok || !incidentsRes.ok) {
+        throw new Error('Network response was not ok')
+      }
       const services = await servicesRes.json()
       const incidents = await incidentsRes.json()
       setStatusData({
-        totalIncidents: incidents.length,
-        totalServices: services.length,
-        services: services,
-        incidents: incidents
+        totalIncidents: Array.isArray(incidents) ? incidents.length : 0,
+        totalServices: Array.isArray(services) ? services.length : 0,
+        services: Array.isArray(services) ? services : [],
+        incidents: Array.isArray(incidents) ? incidents : []
       })
     } catch (error) {
       console.error('Failed to fetch status data:', error)
+      setStatusData({
+        totalIncidents: 0,
+        totalServices: 0,
+        services: [],
+        incidents: []
+      })
     }
   }
 
@@ -36,6 +50,7 @@ export default function Home() {
     fetchStatusData()
     const interval = setInterval(fetchStatusData, 30000)
     return () => clearInterval(interval)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const getStatusColor = (status: string) => {
@@ -99,6 +114,10 @@ export default function Home() {
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 className="text-gray-700 hover:text-blue-600 p-2"
+                aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+                aria-expanded={mobileMenuOpen}
+                aria-controls="mobile-menu"
+                type="button"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   {mobileMenuOpen ? (
@@ -113,7 +132,7 @@ export default function Home() {
 
           {/* Mobile Navigation Menu */}
           {mobileMenuOpen && (
-            <div className="md:hidden border-t border-gray-200 py-4">
+            <div id="mobile-menu" className="md:hidden border-t border-gray-200 py-4">
               <div className="flex flex-col space-y-4">
                 <a href="#status" className="text-gray-700 hover:text-blue-600 text-sm font-medium px-4">Status</a>
                 <a href="#team" className="text-gray-700 hover:text-blue-600 text-sm font-medium px-4">Team</a>
@@ -176,7 +195,7 @@ export default function Home() {
             <div className="bg-white p-4 sm:p-6 rounded-lg shadow border flex flex-col items-center sm:col-span-2 lg:col-span-1">
               <span className="text-gray-500 text-sm">Uptime</span>
               <span className="text-2xl sm:text-3xl font-bold text-green-600 mt-2">
-                {statusData.totalServices > 0 ? Math.round(((statusData.services.filter((s: { status: string }) => s.status === 'operational').length / statusData.totalServices) * 100)) : 0}%
+                {statusData.totalServices > 0 ? Math.round(((statusData.services.filter((s) => s.status === 'operational').length / statusData.totalServices) * 100)) : 0}%
               </span>
             </div>
           </div>
@@ -186,7 +205,7 @@ export default function Home() {
             <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">Service Status</h3>
             {statusData.services.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-                {statusData.services.map((service: { id: string; name: string; status: string; description?: string }) => (
+                {statusData.services.map((service) => (
                   <div key={service.id} className="p-3 sm:p-4 border rounded-lg bg-gray-50 flex flex-col gap-2">
                     <div className="flex items-center justify-between">
                       <span className="font-medium text-gray-900 text-sm sm:text-base">{service.name}</span>
@@ -211,7 +230,7 @@ export default function Home() {
             <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">Recent Incidents</h3>
             {statusData.incidents.length > 0 ? (
               <ul className="space-y-3 sm:space-y-4">
-                {statusData.incidents.slice(0, 5).map((incident: { id: string; title: string; description?: string; createdAt: string }) => (
+                {statusData.incidents.slice(0, 5).map((incident) => (
                   <li key={incident.id} className="bg-white border-l-4 border-red-500 p-3 sm:p-4 rounded shadow-sm">
                     <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0">
                       <span className="font-medium text-gray-900 text-sm sm:text-base">{incident.title}</span>

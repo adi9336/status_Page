@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { FaPlus, FaExclamationCircle, FaChevronDown, FaChevronUp, FaComment, FaEdit, FaSave, FaTimes } from 'react-icons/fa'
-import IncidentUpdates from '../../../components/components/IncidentUpdates'
+import IncidentUpdates from '../../../components/IncidentUpdates'
 
 interface Service {
   id: string

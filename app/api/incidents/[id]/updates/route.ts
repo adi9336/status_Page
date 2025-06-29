@@ -1,45 +1,39 @@
 import { NextResponse } from 'next/server';
+import { prisma } from '../../../../../lib/prisma';
 
 const orgId = "org_2z6AucumjhZE4b008K1hvAresjG";
-
-// Mock data for incident updates
-const mockUpdates = [
-  {
-    id: "update_1",
-    content: "Investigating the issue",
-    incidentId: "incident_1",
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: "update_2",
-    content: "Issue identified - database connection pool exhausted",
-    incidentId: "incident_1",
-    createdAt: new Date(Date.now() - 3600000).toISOString(),
-  }
-];
 
 // GET: Fetch all updates for a specific incident
 export async function GET(request: Request, context: { params: Promise<{ id: string }> }) {
   const { id: incidentId } = await context.params;
   
   try {
-    // Verify the incident exists (using the mock incidents from the parent route)
-    const mockIncidents = [
-      { id: "incident_1", organizationId: orgId },
-      { id: "incident_2", organizationId: orgId }
-    ];
-    
-    const incident = mockIncidents.find(inc => inc.id === incidentId && inc.organizationId === orgId);
+    // Verify the incident exists and belongs to the organization
+    const incident = await prisma.incident.findFirst({
+      where: {
+        id: incidentId,
+        organizationId: orgId
+      }
+    });
     
     if (!incident) {
       return NextResponse.json({ error: 'Incident not found' }, { status: 404 });
     }
     
-    const updates = mockUpdates.filter(update => update.incidentId === incidentId);
+    // Fetch all updates for this incident, ordered by creation date (newest first)
+    const updates = await prisma.incidentUpdate.findMany({
+      where: {
+        incidentId: incidentId
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    });
+    
     return NextResponse.json(updates);
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Internal server error';
-    return NextResponse.json({ error: errorMessage }, { status: 500 });
+    console.error('Database error:', error);
+    return NextResponse.json({ error: 'Failed to fetch updates' }, { status: 500 });
   }
 }
 
@@ -53,29 +47,29 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
   }
   
   try {
-    // Verify the incident exists
-    const mockIncidents = [
-      { id: "incident_1", organizationId: orgId },
-      { id: "incident_2", organizationId: orgId }
-    ];
-    
-    const incident = mockIncidents.find(inc => inc.id === incidentId && inc.organizationId === orgId);
+    // Verify the incident exists and belongs to the organization
+    const incident = await prisma.incident.findFirst({
+      where: {
+        id: incidentId,
+        organizationId: orgId
+      }
+    });
     
     if (!incident) {
       return NextResponse.json({ error: 'Incident not found' }, { status: 404 });
     }
     
-    const newUpdate = {
-      id: `update_${Date.now()}`,
-      content: body.content,
-      incidentId: incidentId,
-      createdAt: new Date().toISOString(),
-    };
+    // Create the new update
+    const newUpdate = await prisma.incidentUpdate.create({
+      data: {
+        content: body.content,
+        incidentId: incidentId
+      }
+    });
     
-    mockUpdates.push(newUpdate);
-    return NextResponse.json(newUpdate);
+    return NextResponse.json(newUpdate, { status: 201 });
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Internal server error';
-    return NextResponse.json({ error: errorMessage }, { status: 500 });
+    console.error('Database error:', error);
+    return NextResponse.json({ error: 'Failed to create update' }, { status: 500 });
   }
 } 

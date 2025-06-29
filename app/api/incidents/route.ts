@@ -1,42 +1,34 @@
 import { NextResponse } from 'next/server';
+import { prisma } from '../../../lib/prisma';
 
 const orgId = "org_2z6AucumjhZE4b008K1hvAresjG";
 
-// Mock data for incidents
-const mockIncidents = [
-  {
-    id: "incident_1",
-    title: "Database connectivity issues",
-    description: "Users experiencing slow response times",
-    status: "OPEN",
-    serviceId: "service_3",
-    organizationId: orgId,
-    createdAt: new Date().toISOString(),
-    service: {
-      id: "service_3",
-      name: "Database",
-      status: "DEGRADED",
-    }
-  },
-  {
-    id: "incident_2",
-    title: "Scheduled maintenance",
-    description: "Planned maintenance window",
-    status: "SCHEDULED_MAINTENANCE",
-    serviceId: "service_1",
-    organizationId: orgId,
-    createdAt: new Date(Date.now() - 86400000).toISOString(),
-    service: {
-      id: "service_1",
-      name: "Website",
-      status: "OPERATIONAL",
-    }
-  }
-];
-
 // GET: List all incidents for the org
 export async function GET() {
-  return NextResponse.json(mockIncidents);
+  try {
+  const incidents = await prisma.incident.findMany({
+      where: {
+        organizationId: orgId
+      },
+      include: {
+        service: true,
+        updates: {
+          orderBy: {
+            createdAt: 'desc'
+          }
+        }
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+  });
+
+  return NextResponse.json(incidents);
+  } catch (error: unknown) {
+    console.error('Database error:', error);
+    // Return empty array if database is not available
+    return NextResponse.json([]);
+  }
 }
 
 // POST: Create an incident
@@ -49,25 +41,39 @@ export async function POST(req: Request) {
   }
 
   try {
-    const newIncident = {
-      id: `incident_${Date.now()}`,
-      title: body.title,
-      description: body.description || "",
-      status: body.status,
-      serviceId: body.serviceId,
-      organizationId: orgId,
-      createdAt: new Date().toISOString(),
-      service: {
+    // Verify the service exists and belongs to the organization
+    const service = await prisma.service.findFirst({
+      where: {
         id: body.serviceId,
-        name: body.serviceId === "service_1" ? "Website" : body.serviceId === "service_2" ? "API" : "Database",
-        status: "OPERATIONAL",
+        organizationId: orgId
       }
-    };
+    });
+
+    if (!service) {
+      return NextResponse.json({ error: 'Service not found' }, { status: 404 });
+    }
+
+    const newIncident = await prisma.incident.create({
+      data: {
+        title: body.title,
+        description: body.description || "",
+        status: body.status,
+        serviceId: body.serviceId,
+        organizationId: orgId
+      },
+      include: {
+        service: true,
+        updates: {
+          orderBy: {
+            createdAt: 'desc'
+          }
+        }
+      }
+    });
     
-    mockIncidents.unshift(newIncident);
-    return NextResponse.json(newIncident);
+    return NextResponse.json(newIncident, { status: 201 });
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Internal server error';
-    return NextResponse.json({ error: errorMessage }, { status: 500 });
+    console.error('Database error:', error);
+    return NextResponse.json({ error: 'Failed to create incident' }, { status: 500 });
   }
 } 

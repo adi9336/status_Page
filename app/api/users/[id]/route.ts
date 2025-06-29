@@ -1,123 +1,105 @@
 import { NextResponse } from 'next/server';
+import { prisma } from '../../../../lib/prisma';
 
 const orgId = "org_2z6AucumjhZE4b008K1hvAresjG";
 
-// Mock data for users
-const mockUsers = [
-  {
-    id: "user_1",
-    email: "admin@example.com",
-    clerkId: "clerk_admin_1",
-    firstName: "Admin",
-    lastName: "User",
-    fullName: "Admin User",
-    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
-    role: "ADMIN",
-    isActive: true,
-    organizationId: orgId,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    timezone: "UTC",
-    language: "en",
-    emailNotifications: true,
-    pushNotifications: true,
-    profileCompleted: true,
-    totalIncidentsCreated: 5,
-    totalUpdatesPosted: 12,
-  },
-  {
-    id: "user_2",
-    email: "user@example.com",
-    clerkId: "clerk_user_1",
-    firstName: "Regular",
-    lastName: "User",
-    fullName: "Regular User",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
-    role: "MEMBER",
-    isActive: true,
-    organizationId: orgId,
-    createdAt: new Date(Date.now() - 86400000).toISOString(),
-    updatedAt: new Date().toISOString(),
-    timezone: "UTC",
-    language: "en",
-    emailNotifications: true,
-    pushNotifications: false,
-    profileCompleted: true,
-    totalIncidentsCreated: 2,
-    totalUpdatesPosted: 8,
-  }
-];
-
-// GET: Get a single user by ID
+// GET: Fetch a specific user
 export async function GET(request: Request, context: { params: Promise<{ id: string }> }) {
-  const { id } = await context.params;
-  
-  const user = mockUsers.find(u => u.id === id && u.organizationId === orgId);
-  
-  if (!user) {
-    return NextResponse.json({ error: 'User not found' }, { status: 404 });
-  }
-  
-  return NextResponse.json(user);
-}
+  const { id: userId } = await context.params;
 
-// PATCH: Update a user (profile, preferences, role)
-export async function PATCH(request: Request, context: { params: Promise<{ id: string }> }) {
-  const { id } = await context.params;
-  const body = await request.json();
-  
   try {
-    const userIndex = mockUsers.findIndex(u => u.id === id && u.organizationId === orgId);
-    
-    if (userIndex === -1) {
+    const user = await prisma.user.findFirst({
+      where: {
+        id: userId,
+        organizationId: orgId
+      }
+    });
+
+    if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
-    
-    // Update user with provided fields
-    mockUsers[userIndex] = {
-      ...mockUsers[userIndex],
-      firstName: body.firstName !== undefined ? body.firstName : mockUsers[userIndex].firstName,
-      lastName: body.lastName !== undefined ? body.lastName : mockUsers[userIndex].lastName,
-      fullName: body.fullName !== undefined ? body.fullName : mockUsers[userIndex].fullName,
-      avatar: body.avatar !== undefined ? body.avatar : mockUsers[userIndex].avatar,
-      role: body.role !== undefined ? body.role : mockUsers[userIndex].role,
-      isActive: body.isActive !== undefined ? body.isActive : mockUsers[userIndex].isActive,
-      timezone: body.timezone !== undefined ? body.timezone : mockUsers[userIndex].timezone,
-      language: body.language !== undefined ? body.language : mockUsers[userIndex].language,
-      emailNotifications: body.emailNotifications !== undefined ? body.emailNotifications : mockUsers[userIndex].emailNotifications,
-      pushNotifications: body.pushNotifications !== undefined ? body.pushNotifications : mockUsers[userIndex].pushNotifications,
-      profileCompleted: body.profileCompleted !== undefined ? body.profileCompleted : mockUsers[userIndex].profileCompleted,
-      lastLoginAt: body.lastLoginAt !== undefined ? body.lastLoginAt : mockUsers[userIndex].lastLoginAt,
-      lastActivityAt: body.lastActivityAt !== undefined ? body.lastActivityAt : mockUsers[userIndex].lastActivityAt,
-      totalIncidentsCreated: body.totalIncidentsCreated !== undefined ? body.totalIncidentsCreated : mockUsers[userIndex].totalIncidentsCreated,
-      totalUpdatesPosted: body.totalUpdatesPosted !== undefined ? body.totalUpdatesPosted : mockUsers[userIndex].totalUpdatesPosted,
-      lastIncidentCreatedAt: body.lastIncidentCreatedAt !== undefined ? body.lastIncidentCreatedAt : mockUsers[userIndex].lastIncidentCreatedAt,
-      updatedAt: new Date().toISOString(),
-    };
-    
-    return NextResponse.json(mockUsers[userIndex]);
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+
+    return NextResponse.json(user);
+  } catch (error: unknown) {
+    console.error('Database error:', error);
+    return NextResponse.json({ error: 'Failed to fetch user' }, { status: 500 });
+  }
+}
+
+// PATCH: Update a user
+export async function PATCH(request: Request, context: { params: Promise<{ id: string }> }) {
+  const { id: userId } = await context.params;
+  const body = await request.json();
+
+  try {
+    const user = await prisma.user.findFirst({
+      where: {
+        id: userId,
+        organizationId: orgId
+      }
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    // Prepare update data with only provided fields
+    const updateData: any = {};
+    if (body.role !== undefined) updateData.role = body.role;
+    if (body.isActive !== undefined) updateData.isActive = body.isActive;
+    if (body.firstName !== undefined) updateData.firstName = body.firstName;
+    if (body.lastName !== undefined) updateData.lastName = body.lastName;
+    if (body.fullName !== undefined) updateData.fullName = body.fullName;
+    if (body.avatar !== undefined) updateData.avatar = body.avatar;
+    if (body.timezone !== undefined) updateData.timezone = body.timezone;
+    if (body.language !== undefined) updateData.language = body.language;
+    if (body.emailNotifications !== undefined) updateData.emailNotifications = body.emailNotifications;
+    if (body.pushNotifications !== undefined) updateData.pushNotifications = body.pushNotifications;
+
+    // Update the user
+    const updatedUser = await prisma.user.update({
+      where: {
+        id: userId
+      },
+      data: updateData
+    });
+
+    return NextResponse.json(updatedUser);
+  } catch (error: unknown) {
+    console.error('Database error:', error);
+    return NextResponse.json({ error: 'Failed to update user' }, { status: 500 });
   }
 }
 
 // DELETE: Deactivate a user (soft delete)
 export async function DELETE(request: Request, context: { params: Promise<{ id: string }> }) {
-  const { id } = await context.params;
-  
+  const { id: userId } = await context.params;
+
   try {
-    const userIndex = mockUsers.findIndex(u => u.id === id && u.organizationId === orgId);
-    
-    if (userIndex === -1) {
+    const user = await prisma.user.findFirst({
+      where: {
+        id: userId,
+        organizationId: orgId
+      }
+    });
+
+    if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
-    
-    // Deactivate user
-    mockUsers[userIndex].isActive = false;
-    mockUsers[userIndex].updatedAt = new Date().toISOString();
-    
-    return NextResponse.json({ message: 'User deactivated', user: mockUsers[userIndex] });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+
+    // Soft delete by setting isActive to false
+    await prisma.user.update({
+      where: {
+        id: userId
+      },
+      data: {
+        isActive: false
+      }
+    });
+
+    return NextResponse.json({ message: 'User deactivated successfully' });
+  } catch (error: unknown) {
+    console.error('Database error:', error);
+    return NextResponse.json({ error: 'Failed to deactivate user' }, { status: 500 });
   }
 } 

@@ -1,54 +1,27 @@
 import { NextResponse } from 'next/server';
+import { prisma } from '../../../../lib/prisma';
 
 const orgId = "org_2z6AucumjhZE4b008K1hvAresjG";
-
-// Mock data for incidents
-const mockIncidents = [
-  {
-    id: "incident_1",
-    title: "Database connectivity issues",
-    description: "Users experiencing slow response times",
-    status: "OPEN",
-    serviceId: "service_3",
-    organizationId: orgId,
-    createdAt: new Date().toISOString(),
-    service: {
-      id: "service_3",
-      name: "Database",
-      status: "DEGRADED",
-    },
-    updates: [
-      {
-        id: "update_1",
-        content: "Investigating the issue",
-        incidentId: "incident_1",
-        createdAt: new Date().toISOString(),
-      }
-    ]
-  },
-  {
-    id: "incident_2",
-    title: "Scheduled maintenance",
-    description: "Planned maintenance window",
-    status: "SCHEDULED_MAINTENANCE",
-    serviceId: "service_1",
-    organizationId: orgId,
-    createdAt: new Date(Date.now() - 86400000).toISOString(),
-    service: {
-      id: "service_1",
-      name: "Website",
-      status: "OPERATIONAL",
-    },
-    updates: []
-  }
-];
 
 // GET: Fetch a specific incident
 export async function GET(request: Request, context: { params: Promise<{ id: string }> }) {
   const { id: incidentId } = await context.params;
 
   try {
-    const incident = mockIncidents.find(inc => inc.id === incidentId && inc.organizationId === orgId);
+    const incident = await prisma.incident.findFirst({
+      where: {
+        id: incidentId,
+        organizationId: orgId
+      },
+      include: {
+        service: true,
+        updates: {
+          orderBy: {
+            createdAt: 'desc'
+          }
+        }
+      }
+    });
 
     if (!incident) {
       return NextResponse.json({ error: 'Incident not found' }, { status: 404 });
@@ -56,8 +29,8 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
 
     return NextResponse.json(incident);
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Internal server error';
-    return NextResponse.json({ error: errorMessage }, { status: 500 });
+    console.error('Database error:', error);
+    return NextResponse.json({ error: 'Failed to fetch incident' }, { status: 500 });
   }
 }
 
@@ -67,25 +40,42 @@ export async function PUT(request: Request, context: { params: Promise<{ id: str
   const body = await request.json();
 
   try {
-    const incidentIndex = mockIncidents.findIndex(inc => inc.id === incidentId && inc.organizationId === orgId);
+    const incident = await prisma.incident.findFirst({
+      where: {
+        id: incidentId,
+        organizationId: orgId
+      }
+    });
 
-    if (incidentIndex === -1) {
+    if (!incident) {
       return NextResponse.json({ error: 'Incident not found' }, { status: 404 });
     }
 
     // Update the incident
-    mockIncidents[incidentIndex] = {
-      ...mockIncidents[incidentIndex],
-      title: body.title || mockIncidents[incidentIndex].title,
-      status: body.status || mockIncidents[incidentIndex].status,
-      serviceId: body.serviceId || mockIncidents[incidentIndex].serviceId,
-      description: body.description !== undefined ? body.description : mockIncidents[incidentIndex].description,
-    };
+    const updatedIncident = await prisma.incident.update({
+      where: {
+        id: incidentId
+      },
+      data: {
+        title: body.title || incident.title,
+        status: body.status || incident.status,
+        serviceId: body.serviceId || incident.serviceId,
+        description: body.description !== undefined ? body.description : incident.description,
+      },
+      include: {
+        service: true,
+        updates: {
+          orderBy: {
+            createdAt: 'desc'
+          }
+        }
+      }
+    });
 
-    return NextResponse.json(mockIncidents[incidentIndex]);
+    return NextResponse.json(updatedIncident);
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Internal server error';
-    return NextResponse.json({ error: errorMessage }, { status: 500 });
+    console.error('Database error:', error);
+    return NextResponse.json({ error: 'Failed to update incident' }, { status: 500 });
   }
 }
 
@@ -95,22 +85,44 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
   const body = await request.json();
 
   try {
-    const incidentIndex = mockIncidents.findIndex(inc => inc.id === incidentId && inc.organizationId === orgId);
+    const incident = await prisma.incident.findFirst({
+      where: {
+        id: incidentId,
+        organizationId: orgId
+      }
+    });
 
-    if (incidentIndex === -1) {
+    if (!incident) {
       return NextResponse.json({ error: 'Incident not found' }, { status: 404 });
     }
 
-    // Update only provided fields
-    if (body.title !== undefined) mockIncidents[incidentIndex].title = body.title;
-    if (body.status !== undefined) mockIncidents[incidentIndex].status = body.status;
-    if (body.serviceId !== undefined) mockIncidents[incidentIndex].serviceId = body.serviceId;
-    if (body.description !== undefined) mockIncidents[incidentIndex].description = body.description;
+    // Prepare update data with only provided fields
+    const updateData: any = {};
+    if (body.title !== undefined) updateData.title = body.title;
+    if (body.status !== undefined) updateData.status = body.status;
+    if (body.serviceId !== undefined) updateData.serviceId = body.serviceId;
+    if (body.description !== undefined) updateData.description = body.description;
 
-    return NextResponse.json(mockIncidents[incidentIndex]);
+    // Update the incident
+    const updatedIncident = await prisma.incident.update({
+      where: {
+        id: incidentId
+      },
+      data: updateData,
+      include: {
+        service: true,
+        updates: {
+          orderBy: {
+            createdAt: 'desc'
+          }
+        }
+      }
+    });
+
+    return NextResponse.json(updatedIncident);
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Internal server error';
-    return NextResponse.json({ error: errorMessage }, { status: 500 });
+    console.error('Database error:', error);
+    return NextResponse.json({ error: 'Failed to update incident' }, { status: 500 });
   }
 }
 
@@ -119,18 +131,27 @@ export async function DELETE(request: Request, context: { params: Promise<{ id: 
   const { id: incidentId } = await context.params;
 
   try {
-    const incidentIndex = mockIncidents.findIndex(inc => inc.id === incidentId && inc.organizationId === orgId);
+    const incident = await prisma.incident.findFirst({
+      where: {
+        id: incidentId,
+        organizationId: orgId
+      }
+    });
 
-    if (incidentIndex === -1) {
+    if (!incident) {
       return NextResponse.json({ error: 'Incident not found' }, { status: 404 });
     }
 
-    // Remove the incident
-    mockIncidents.splice(incidentIndex, 1);
+    // Delete the incident (this will also delete related updates due to CASCADE)
+    await prisma.incident.delete({
+      where: {
+        id: incidentId
+      }
+    });
 
     return NextResponse.json({ message: 'Incident deleted successfully' });
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Internal server error';
-    return NextResponse.json({ error: errorMessage }, { status: 500 });
+    console.error('Database error:', error);
+    return NextResponse.json({ error: 'Failed to delete incident' }, { status: 500 });
   }
 } 
