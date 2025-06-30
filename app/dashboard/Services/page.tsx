@@ -68,9 +68,9 @@ export default function ServicesPage() {
   }
 
   return (
-    <div className="p-4 sm:p-8 bg-gray-100 min-h-screen">
+    <div className="p-2 sm:p-4 md:p-8 bg-gray-100 min-h-screen w-full">
       {/* Return Button */}
-      <div className="mb-6">
+      <div className="mb-4 sm:mb-6">
         <button
           onClick={() => router.push('/')}
           className="inline-block bg-white hover:bg-blue-50 text-blue-600 font-semibold px-4 py-2 rounded-full transition-colors text-sm shadow border border-gray-200"
@@ -78,15 +78,15 @@ export default function ServicesPage() {
           ← Return to Dashboard
         </button>
       </div>
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2"><FaServer className="text-blue-500" /> Manage Services</h1>
-        <p className="text-gray-500 text-base mt-1">Add and manage your service status</p>
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-800 flex items-center gap-2"><FaServer className="text-blue-500" /> Manage Services</h1>
+        <p className="text-gray-500 text-sm sm:text-base mt-1">Add and manage your service status</p>
       </div>
 
       {/* Add Service Form */}
-      <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
-        <h2 className="text-lg font-semibold text-gray-800 mb-4">Add New Service</h2>
-        <div className="flex flex-col sm:flex-row gap-4 items-end">
+      <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 mb-6 sm:mb-8">
+        <h2 className="text-base sm:text-lg font-semibold text-gray-800 mb-2 sm:mb-4">Add New Service</h2>
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-end">
           <div className="flex-1 min-w-0">
             <label className="block text-sm font-medium text-gray-700 mb-2">Service Name</label>
             <input
@@ -122,11 +122,11 @@ export default function ServicesPage() {
       </div>
 
       {/* Services List */}
-      <div className="bg-white rounded-2xl shadow-lg">
-        <div className="p-6 border-b border-gray-100">
-          <h2 className="text-lg font-semibold text-gray-800">Current Services</h2>
+      <div className="bg-white rounded-2xl shadow-lg overflow-x-auto">
+        <div className="p-4 sm:p-6 border-b border-gray-100">
+          <h2 className="text-base sm:text-lg font-semibold text-gray-800">Current Services</h2>
         </div>
-        <div className="divide-y divide-gray-100">
+        <div className="divide-y divide-gray-100 min-w-[320px]">
           {services.length === 0 ? (
             <div className="p-6 text-center text-gray-400 text-base">No services found. Add your first service above.</div>
           ) : (

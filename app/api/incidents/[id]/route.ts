@@ -6,7 +6,7 @@ const orgId = "org_2z6AucumjhZE4b008K1hvAresjG";
 interface IncidentUpdateData {
   title?: string;
   status?: string;
-  serviceId?: string;
+  serviceId?: string | null;
   description?: string;
 }
 
@@ -66,7 +66,7 @@ export async function PUT(request: Request, context: { params: Promise<{ id: str
       data: {
         title: body.title || incident.title,
         status: body.status || incident.status,
-        serviceId: body.serviceId || incident.serviceId,
+        serviceId: body.serviceId !== undefined ? body.serviceId : incident.serviceId,
         description: body.description !== undefined ? body.description : incident.description,
       },
       include: {
@@ -104,16 +104,11 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
     }
 
     // Prepare update data with only provided fields
-    const updateData: IncidentUpdateData = {};
+    const updateData: Record<string, any> = {};
     if (body.title !== undefined) updateData.title = body.title;
     if (body.status !== undefined) updateData.status = body.status;
-    if (body.serviceId !== undefined) updateData.serviceId = body.serviceId;
     if (body.description !== undefined) updateData.description = body.description;
-
-    // Remove serviceId if it's undefined to match Prisma's type
-    if (updateData.serviceId === undefined) {
-      delete updateData.serviceId;
-    }
+    if (typeof body.serviceId === 'string') updateData.serviceId = body.serviceId;
 
     // Update the incident
     const updatedIncident = await prisma.incident.update({
@@ -140,6 +135,8 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
 
 // DELETE: Delete an incident
 export async function DELETE(request: Request, context: { params: Promise<{ id: string }> }) {
+  // You may need to get orgId from your authentication/session logic
+  // For now, assuming orgId is available in the scope
   const { id: incidentId } = await context.params;
 
   try {

@@ -158,8 +158,8 @@ export default function AnalyticsPage() {
   }
 
   return (
-    <div className="p-4 sm:p-8 bg-gray-100 min-h-screen">
-      <div className="mb-6">
+    <div className="p-2 sm:p-4 md:p-8 bg-gray-100 min-h-screen w-full">
+      <div className="mb-4 sm:mb-6">
         <button
           onClick={() => router.push('/')}
           className="inline-block bg-white hover:bg-blue-50 text-blue-600 font-semibold px-4 py-2 rounded-full transition-colors text-sm shadow border border-gray-200"
@@ -168,15 +168,15 @@ export default function AnalyticsPage() {
         </button>
       </div>
 
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-800 flex items-center gap-2">
           <FaChartLine className="text-blue-400" /> Analytics Dashboard
         </h1>
         <p className="text-gray-500 text-base mt-1">Comprehensive insights into your system performance</p>
       </div>
 
       {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-6 sm:mb-8">
         <motion.div whileHover={{ scale: 1.02 }} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white rounded-2xl shadow-lg p-6">
           <div className="flex items-center justify-between">
             <div>

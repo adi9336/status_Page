@@ -16,6 +16,16 @@ interface UserUpdateData {
   pushNotifications?: boolean;
 }
 
+const UserRoles = [
+  'MASTER_ADMIN',
+  'SUPER_ADMIN',
+  'ADMIN',
+  'MANAGER',
+  'MEMBER',
+  'VIEWER',
+] as const;
+type UserRole = typeof UserRoles[number];
+
 // GET: Fetch a specific user
 export async function GET(request: Request, context: { params: Promise<{ id: string }> }) {
   const { id: userId } = await context.params;
@@ -57,8 +67,10 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
     }
 
     // Prepare update data with only provided fields
-    const updateData: UserUpdateData = {};
-    if (body.role !== undefined) updateData.role = body.role;
+    const updateData: Record<string, any> = {};
+    if (typeof body.role === 'string' && UserRoles.includes(body.role as UserRole)) {
+      updateData.role = body.role as UserRole;
+    }
     if (body.isActive !== undefined) updateData.isActive = body.isActive;
     if (body.firstName !== undefined) updateData.firstName = body.firstName;
     if (body.lastName !== undefined) updateData.lastName = body.lastName;

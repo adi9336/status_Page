@@ -78,10 +78,10 @@ export default function Home() {
       </header>
 
       {/* Hero Section */}
-      <main className="flex flex-col items-center justify-center px-4 py-16 md:py-24" style={{ paddingTop: '4rem' }}>
-        <div className="max-w-2xl w-full flex flex-col items-center text-center gap-4">
-          <h1 className="text-4xl md:text-5xl font-extrabold text-primary drop-shadow-lg mb-2">Team Status Dashboard</h1>
-          <p className="text-lg text-gray-700 mb-6">Monitor your company's services and incidents in real time. Empower your team with transparency and control.</p>
+      <main className="flex flex-col items-center justify-center px-2 sm:px-4 py-10 md:py-24 w-full" style={{ paddingTop: '4rem' }}>
+        <div className="max-w-2xl w-full flex flex-col items-center text-center gap-4 px-2 sm:px-0">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-primary drop-shadow-lg mb-2">Team Status Dashboard</h1>
+          <p className="text-base sm:text-lg text-gray-700 mb-6">Monitor your company's services and incidents in real time. Empower your team with transparency and control.</p>
           <SignedOut>
             <SignInButton mode="modal">
               <Button className="bg-primary text-white px-8 py-3 rounded-full text-lg font-bold shadow-lg">Go to Dashboard</Button>
@@ -95,7 +95,7 @@ export default function Home() {
         </div>
 
         {/* Stats Row */}
-        <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-3 gap-6 mt-16">
+        <div className="w-full max-w-4xl grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 mt-10 sm:mt-16 px-1 sm:px-0">
           <Card className="glass-panel flex flex-col items-center py-8">
             <div className="text-sm text-gray-500 mb-2">Total Services</div>
             <div className="text-4xl font-bold text-primary">{statusData.totalServices}</div>

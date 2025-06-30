@@ -157,9 +157,9 @@ export default function IncidentsPage() {
   }
 
   return (
-    <div className="p-4 sm:p-8 bg-gray-100 min-h-screen">
+    <div className="p-2 sm:p-4 md:p-8 bg-gray-100 min-h-screen w-full">
       {/* Return Button */}
-      <div className="mb-6">
+      <div className="mb-4 sm:mb-6">
         <button
           onClick={() => router.push('/')}
           className="inline-block bg-white hover:bg-blue-50 text-blue-600 font-semibold px-4 py-2 rounded-full transition-colors text-sm shadow border border-gray-200"
@@ -167,15 +167,15 @@ export default function IncidentsPage() {
           ← Return to Dashboard
         </button>
       </div>
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2"><FaExclamationCircle className="text-red-400" /> Manage Incidents</h1>
-        <p className="text-gray-500 text-base mt-1">Create and track service incidents</p>
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-800 flex items-center gap-2"><FaExclamationCircle className="text-red-400" /> Manage Incidents</h1>
+        <p className="text-gray-500 text-sm sm:text-base mt-1">Create and track service incidents</p>
       </div>
 
       {/* Create Incident Form */}
-      <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
-        <h2 className="text-lg font-semibold text-gray-800 mb-4">Create New Incident</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+      <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 mb-6 sm:mb-8">
+        <h2 className="text-base sm:text-lg font-semibold text-gray-800 mb-2 sm:mb-4">Create New Incident</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 items-end">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Incident Title</label>
       <input
@@ -224,11 +224,11 @@ export default function IncidentsPage() {
       </div>
 
       {/* Incidents List */}
-      <div className="bg-white rounded-2xl shadow-lg">
-        <div className="p-6 border-b border-gray-100">
-          <h2 className="text-lg font-semibold text-gray-800">Recent Incidents</h2>
+      <div className="bg-white rounded-2xl shadow-lg overflow-x-auto">
+        <div className="p-4 sm:p-6 border-b border-gray-100">
+          <h2 className="text-base sm:text-lg font-semibold text-gray-800">Current Incidents</h2>
         </div>
-        <div className="divide-y divide-gray-100">
+        <div className="divide-y divide-gray-100 min-w-[320px]">
           {incidents.length === 0 ? (
             <div className="p-6 text-center text-gray-400 text-base">No incidents found. Create your first incident above.</div>
           ) : (

@@ -240,8 +240,8 @@ export default function UsersPage() {
   }
 
   return (
-    <div className="glass-card p-4 sm:p-8 min-h-screen">
-      <div className="mb-6">
+    <div className="glass-card p-2 sm:p-4 md:p-8 min-h-screen w-full">
+      <div className="mb-4 sm:mb-6">
         <button
           onClick={() => router.push('/')}
           className="inline-block bg-white hover:bg-blue-50 text-blue-600 font-semibold px-4 py-2 rounded-full transition-colors text-sm shadow border border-gray-200"
@@ -250,8 +250,8 @@ export default function UsersPage() {
         </button>
       </div>
       
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-800 flex items-center gap-2">
           <FaUser className="text-blue-400" /> User Management
         </h1>
         <p className="text-gray-500 text-base mt-1">Manage your team members, roles, and access permissions</p>
@@ -274,7 +274,7 @@ export default function UsersPage() {
       </div>
 
       {/* Search and Filters */}
-      <div className="bg-white/60 backdrop-blur-glass rounded-2xl shadow-lg p-6 mb-6">
+      <div className="bg-white/60 backdrop-blur-glass rounded-2xl shadow-lg p-4 sm:p-6 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {/* Search */}
           <div className="relative">
@@ -331,8 +331,8 @@ export default function UsersPage() {
       </div>
 
       {/* Users Table */}
-      <div className="bg-white/60 backdrop-blur-glass rounded-2xl shadow-lg p-6">
-        <div className="flex items-center justify-between mb-4">
+      <div className="bg-white/60 backdrop-blur-glass rounded-2xl shadow-lg p-4 sm:p-6 overflow-x-auto">
+        <div className="flex items-center justify-between mb-4 min-w-[320px]">
           <h2 className="text-lg font-semibold text-gray-800">Team Members ({filteredUsers.length})</h2>
           <div className="text-sm text-gray-500">
             {users.filter(u => u.isActive).length} active, {users.filter(u => !u.isActive).length} inactive
