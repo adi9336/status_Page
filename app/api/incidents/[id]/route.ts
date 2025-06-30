@@ -3,6 +3,13 @@ import { prisma } from '../../../../lib/prisma';
 
 const orgId = "org_2z6AucumjhZE4b008K1hvAresjG";
 
+interface IncidentUpdateData {
+  title?: string;
+  status?: string;
+  serviceId?: string;
+  description?: string;
+}
+
 // GET: Fetch a specific incident
 export async function GET(request: Request, context: { params: Promise<{ id: string }> }) {
   const { id: incidentId } = await context.params;
@@ -97,7 +104,7 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
     }
 
     // Prepare update data with only provided fields
-    const updateData: any = {};
+    const updateData: IncidentUpdateData = {};
     if (body.title !== undefined) updateData.title = body.title;
     if (body.status !== undefined) updateData.status = body.status;
     if (body.serviceId !== undefined) updateData.serviceId = body.serviceId;

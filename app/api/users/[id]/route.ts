@@ -3,6 +3,19 @@ import { prisma } from '../../../../lib/prisma';
 
 const orgId = "org_2z6AucumjhZE4b008K1hvAresjG";
 
+interface UserUpdateData {
+  role?: string;
+  isActive?: boolean;
+  firstName?: string;
+  lastName?: string;
+  fullName?: string;
+  avatar?: string;
+  timezone?: string;
+  language?: string;
+  emailNotifications?: boolean;
+  pushNotifications?: boolean;
+}
+
 // GET: Fetch a specific user
 export async function GET(request: Request, context: { params: Promise<{ id: string }> }) {
   const { id: userId } = await context.params;
@@ -44,7 +57,7 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
     }
 
     // Prepare update data with only provided fields
-    const updateData: any = {};
+    const updateData: UserUpdateData = {};
     if (body.role !== undefined) updateData.role = body.role;
     if (body.isActive !== undefined) updateData.isActive = body.isActive;
     if (body.firstName !== undefined) updateData.firstName = body.firstName;

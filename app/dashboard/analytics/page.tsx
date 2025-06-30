@@ -23,6 +23,21 @@ interface AnalyticsData {
   recentActivity: { type: string; description: string; timestamp: string }[];
 }
 
+interface Incident {
+  status: string;
+  [key: string]: any;
+}
+
+interface Service {
+  status: string;
+  [key: string]: any;
+}
+
+interface User {
+  isActive: boolean;
+  [key: string]: any;
+}
+
 export default function AnalyticsPage() {
   const [analytics, setAnalytics] = useState<AnalyticsData>({
     totalIncidents: 0,
@@ -57,12 +72,12 @@ export default function AnalyticsPage() {
       const users = await usersRes.json();
 
       // Calculate analytics
-      const resolvedIncidents = incidents.filter((i: any) => i.status === 'RESOLVED').length;
-      const activeIncidents = incidents.filter((i: any) => i.status === 'OPEN').length;
-      const operationalServices = services.filter((s: any) => s.status === 'OPERATIONAL').length;
-      const degradedServices = services.filter((s: any) => s.status === 'DEGRADED').length;
-      const downServices = services.filter((s: any) => s.status === 'DOWN').length;
-      const activeUsers = users.filter((u: any) => u.isActive).length;
+      const resolvedIncidents = incidents.filter((i: Incident) => i.status === 'RESOLVED').length;
+      const activeIncidents = incidents.filter((i: Incident) => i.status === 'OPEN').length;
+      const operationalServices = services.filter((s: Service) => s.status === 'OPERATIONAL').length;
+      const degradedServices = services.filter((s: Service) => s.status === 'DEGRADED').length;
+      const downServices = services.filter((s: Service) => s.status === 'DOWN').length;
+      const activeUsers = users.filter((u: User) => u.isActive).length;
 
       // Mock data for charts (in real app, you'd calculate these from actual data)
       const incidentsByMonth = [

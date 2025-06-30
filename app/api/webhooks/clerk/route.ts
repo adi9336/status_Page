@@ -3,6 +3,17 @@ import { prisma } from '@/lib/prisma';
 import { Webhook } from 'svix';
 import { headers } from 'next/headers';
 
+type ClerkWebhookEvent = {
+  data: {
+    id: string;
+    email_addresses?: { email_address: string }[];
+    first_name?: string;
+    last_name?: string;
+    [key: string]: any;
+  };
+  [key: string]: any;
+};
+
 export async function POST(request: NextRequest) {
   try {
     const headerPayload = headers();
@@ -22,14 +33,14 @@ export async function POST(request: NextRequest) {
     }
 
     const wh = new Webhook(webhookSecret);
-    let evt;
+    let evt: ClerkWebhookEvent;
 
     try {
       evt = wh.verify(payload, {
         "svix-id": svix_id,
         "svix-timestamp": svix_timestamp,
         "svix-signature": svix_signature,
-      }) as any;
+      }) as ClerkWebhookEvent;
     } catch (err) {
       return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
     }
