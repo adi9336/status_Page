@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
         where: {
           OR: [
             { email: { equals: email.toLowerCase(), mode: 'insensitive' } },
-            { clerkId: null }
+            { clerkId: "" }
           ]
         },
       });
