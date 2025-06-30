@@ -110,6 +110,11 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
     if (body.serviceId !== undefined) updateData.serviceId = body.serviceId;
     if (body.description !== undefined) updateData.description = body.description;
 
+    // Remove serviceId if it's undefined to match Prisma's type
+    if (updateData.serviceId === undefined) {
+      delete updateData.serviceId;
+    }
+
     // Update the incident
     const updatedIncident = await prisma.incident.update({
       where: {
