@@ -157,16 +157,7 @@ export default function IncidentsPage() {
   }
 
   return (
-    <div className="p-2 sm:p-4 md:p-8 bg-gray-100 min-h-screen w-full">
-      {/* Return Button */}
-      <div className="mb-4 sm:mb-6">
-        <button
-          onClick={() => router.push('/')}
-          className="inline-block bg-white hover:bg-blue-50 text-blue-600 font-semibold px-4 py-2 rounded-full transition-colors text-sm shadow border border-gray-200"
-        >
-          ← Return to Dashboard
-        </button>
-      </div>
+    <>
       <div className="mb-6 sm:mb-8">
         <h1 className="text-xl sm:text-2xl font-bold text-gray-800 flex items-center gap-2"><FaExclamationCircle className="text-red-400" /> Manage Incidents</h1>
         <p className="text-gray-500 text-sm sm:text-base mt-1">Create and track service incidents</p>
@@ -183,8 +174,7 @@ export default function IncidentsPage() {
               placeholder="Enter incident title"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent text-sm"
-              style={{ color: '#000' }}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent text-sm text-black"
             />
           </div>
           <div>
@@ -192,12 +182,11 @@ export default function IncidentsPage() {
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent text-sm"
-              style={{ color: '#000' }}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent text-sm text-black"
             >
-              <option value="OPEN" style={{ color: '#000' }}>🔴 Open</option>
-              <option value="RESOLVED" style={{ color: '#000' }}>🟢 Resolved</option>
-              <option value="SCHEDULED_MAINTENANCE" style={{ color: '#000' }}>🔵 Scheduled Maintenance</option>
+              <option value="OPEN" className="text-black">🔴 Open</option>
+              <option value="RESOLVED" className="text-black">🟢 Resolved</option>
+              <option value="SCHEDULED_MAINTENANCE" className="text-black">🔵 Scheduled Maintenance</option>
             </select>
           </div>
           <div>
@@ -205,12 +194,11 @@ export default function IncidentsPage() {
             <select
               value={serviceId}
               onChange={(e) => setServiceId(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent text-sm"
-              style={{ color: '#000' }}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent text-sm text-black"
             >
-              <option value="" style={{ color: '#000' }}>Select Service</option>
+              <option value="" className="text-black">Select Service</option>
               {services.map((service) => (
-                <option key={service.id} value={service.id} style={{ color: '#000' }}>{service.name}</option>
+                <option key={service.id} value={service.id} className="text-black">{service.name}</option>
               ))}
             </select>
           </div>
@@ -243,28 +231,25 @@ export default function IncidentsPage() {
                           type="text"
                           value={editForm.title}
                           onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
-                          className="border border-gray-300 rounded px-2 py-1 text-sm flex-1"
-                          style={{ color: '#000' }}
+                          className="border border-gray-300 rounded px-2 py-1 text-sm flex-1 text-black"
                         />
                         <select
                           value={editForm.status}
                           onChange={(e) => setEditForm({ ...editForm, status: e.target.value })}
-                          className="border border-gray-300 rounded px-2 py-1 text-sm"
-                          style={{ color: '#000' }}
+                          className="border border-gray-300 rounded px-2 py-1 text-sm text-black"
                         >
-                          <option value="OPEN" style={{ color: '#000' }}>🔴 Open</option>
-                          <option value="RESOLVED" style={{ color: '#000' }}>🟢 Resolved</option>
-                          <option value="SCHEDULED_MAINTENANCE" style={{ color: '#000' }}>🔵 Scheduled Maintenance</option>
+                          <option value="OPEN" className="text-black">🔴 Open</option>
+                          <option value="RESOLVED" className="text-black">🟢 Resolved</option>
+                          <option value="SCHEDULED_MAINTENANCE" className="text-black">🔵 Scheduled Maintenance</option>
       </select>
                         <select
                           value={editForm.serviceId}
                           onChange={(e) => setEditForm({ ...editForm, serviceId: e.target.value })}
-                          className="border border-gray-300 rounded px-2 py-1 text-sm"
-                          style={{ color: '#000' }}
+                          className="border border-gray-300 rounded px-2 py-1 text-sm text-black"
                         >
-                          <option value="" style={{ color: '#000' }}>Select Service</option>
+                          <option value="" className="text-black">Select Service</option>
                           {services.map((service) => (
-                            <option key={service.id} value={service.id} style={{ color: '#000' }}>{service.name}</option>
+                            <option key={service.id} value={service.id} className="text-black">{service.name}</option>
         ))}
       </select>
                         <button
@@ -340,6 +325,6 @@ export default function IncidentsPage() {
           )}
         </div>
       </div>
-    </div>
+    </>
   )
 }

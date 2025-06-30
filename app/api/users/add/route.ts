@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
         fullName: firstName && lastName ? `${firstName} ${lastName}` : null,
         role,
         organizationId,
-        clerkId: '', // Will be updated when user first signs in
+        clerkId: null,
         isActive: true
       }
     });

@@ -88,7 +88,8 @@ export async function POST(request: NextRequest) {
       where: {
         OR: [
           { email: email },
-          { clerkId: clerkId }
+          // Only check for clerkId if it's a non-empty string
+          ...(clerkId ? [{ clerkId: clerkId }] : [])
         ],
         organizationId: orgId
       }

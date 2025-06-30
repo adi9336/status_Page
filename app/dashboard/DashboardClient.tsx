@@ -72,6 +72,10 @@ export default function DashboardClient() {
         fetch('/api/users')
       ]);
 
+      if (!servicesRes.ok || !incidentsRes.ok || !usersRes.ok) {
+        throw new Error('Failed to fetch dashboard data');
+      }
+
       const services: Service[] = await servicesRes.json();
       const incidents: Incident[] = await incidentsRes.json();
       const users: User[] = await usersRes.json();
@@ -130,7 +134,7 @@ export default function DashboardClient() {
 
   if (loading) {
     return (
-      <div className="p-4 sm:p-8 bg-gray-100 min-h-screen flex items-center justify-center">
+      <div className="flex items-center justify-center p-8">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading dashboard...</p>
@@ -140,20 +144,9 @@ export default function DashboardClient() {
   }
 
   return (
-    <div className="p-4 sm:p-8 bg-gray-100 min-h-screen">
-      {/* Top Bar with Notifications and Sign Out (Return to Home removed) */}
-      <div className="flex justify-between items-center mb-6">
-        {/* Removed Return to Home button */}
-        <div className="flex items-center gap-4">
-          <NotificationBell />
-          <SignOutButton>
-            <button className="bg-gradient-to-r from-blue-500 to-green-400 hover:from-blue-600 hover:to-green-500 text-white font-semibold px-6 py-2 rounded-full text-sm transition-colors shadow">Sign Out</button>
-          </SignOutButton>
-        </div>
-      </div>
-      
+    <>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-800">Dashboard Overview</h1>
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Dashboard Overview</h1>
         <p className="text-gray-500 text-base mt-1">Monitor your services and incidents in real-time</p>
       </div>
 
@@ -306,6 +299,6 @@ export default function DashboardClient() {
           </motion.div>
         </div>
       </motion.div>
-    </div>
+    </>
   )
 } 

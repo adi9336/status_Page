@@ -5,7 +5,7 @@ import { SignedIn, SignedOut, SignInButton, UserButton, useAuth } from '@clerk/n
 import { useState, useEffect } from 'react'
 import { Button } from "@/components/UI/Button";
 import { Card } from "@/components/UI/Card";
-import { Activity } from "lucide-react";
+import { Activity, Menu, X } from "lucide-react";
 import { useRouter } from 'next/navigation';
 
 interface StatusData {
@@ -16,6 +16,7 @@ interface StatusData {
 }
 
 export default function Home() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [statusData, setStatusData] = useState<StatusData>({
     totalIncidents: 0,
     totalServices: 0,
@@ -55,67 +56,108 @@ export default function Home() {
   }, [isSignedIn, router]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/10 via-white to-primary/5 font-sans">
+    <div className="min-h-screen bg-gradient-to-br from-primary/10 via-white to-primary/5 font-sans overflow-x-hidden">
       {/* Navbar */}
-      <header className="fixed top-0 left-0 w-full h-16 flex items-center justify-between px-6 lg:px-12 bg-white/60 backdrop-blur-glass border-b border-white/30 z-50">
+      <header className="fixed top-0 left-0 w-full h-16 flex items-center justify-between px-4 sm:px-6 lg:px-12 bg-white/70 backdrop-blur-md border-b border-white/30 z-50">
         <div className="flex items-center gap-2">
           <Activity className="h-6 w-6 text-primary" />
           <span className="text-lg font-bold text-primary">Statusly</span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="hidden sm:flex items-center gap-4">
           <SignedOut>
             <SignInButton mode="modal">
-              <Button className="bg-primary text-white px-5 py-2 rounded-full font-semibold shadow-lg">Dashboard</Button>
+              <Button className="bg-primary text-white px-4 py-2 text-sm rounded-full font-semibold shadow">
+                Dashboard
+              </Button>
             </SignInButton>
           </SignedOut>
           <SignedIn>
             <Link href="/dashboard">
-              <Button className="bg-primary text-white px-5 py-2 rounded-full font-semibold shadow-lg">Dashboard</Button>
+              <Button className="bg-primary text-white px-4 py-2 text-sm rounded-full font-semibold shadow">
+                Dashboard
+              </Button>
             </Link>
             <UserButton afterSignOutUrl="/" />
           </SignedIn>
         </div>
+        <div className="sm:hidden">
+          <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-primary">
+            {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
+        </div>
       </header>
 
+      {/* Mobile Menu */}
+      {isMenuOpen && (
+        <div className="sm:hidden fixed top-16 left-0 w-full bg-white/90 backdrop-blur-md z-40 p-4 border-b">
+          <div className="flex flex-col items-center gap-4">
+            <SignedOut>
+              <SignInButton mode="modal">
+                <Button className="bg-primary text-white px-4 py-2 text-sm rounded-full font-semibold shadow w-full">
+                  Dashboard
+                </Button>
+              </SignInButton>
+            </SignedOut>
+            <SignedIn>
+              <Link href="/dashboard" className="w-full">
+                <Button className="bg-primary text-white px-4 py-2 text-sm rounded-full font-semibold shadow w-full">
+                  Dashboard
+                </Button>
+              </Link>
+              <UserButton afterSignOutUrl="/" />
+            </SignedIn>
+          </div>
+        </div>
+      )}
+
       {/* Hero Section */}
-      <main className="flex flex-col items-center justify-center px-2 sm:px-4 py-10 md:py-24 w-full" style={{ paddingTop: '4rem' }}>
-        <div className="max-w-2xl w-full flex flex-col items-center text-center gap-4 px-2 sm:px-0">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-primary drop-shadow-lg mb-2">Team Status Dashboard</h1>
-          <p className="text-base sm:text-lg text-gray-700 mb-6">Monitor your company's services and incidents in real time. Empower your team with transparency and control.</p>
-          <SignedOut>
-            <SignInButton mode="modal">
-              <Button className="bg-primary text-white px-8 py-3 rounded-full text-lg font-bold shadow-lg">Go to Dashboard</Button>
-            </SignInButton>
-          </SignedOut>
-          <SignedIn>
-            <Link href="/dashboard">
-              <Button className="bg-primary text-white px-8 py-3 rounded-full text-lg font-bold shadow-lg">Go to Dashboard</Button>
-            </Link>
-          </SignedIn>
+      <main className="flex flex-col items-center justify-center px-4 pt-24 pb-12 sm:pt-32 w-full">
+        <div className="max-w-2xl w-full flex flex-col items-center text-center gap-4">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-primary drop-shadow-lg">
+            Team Status Dashboard
+          </h1>
+          <p className="text-base sm:text-lg text-gray-700 max-w-xl">
+            Monitor your company's services and incidents in real time. Empower your team with transparency and control.
+          </p>
+          <div>
+            <SignedOut>
+              <SignInButton mode="modal">
+                <Button className="bg-primary text-white px-8 py-3 text-base sm:text-lg rounded-full font-bold shadow-md">
+                  Go to Dashboard
+                </Button>
+              </SignInButton>
+            </SignedOut>
+            <SignedIn>
+              <Link href="/dashboard">
+                <Button className="bg-primary text-white px-8 py-3 text-base sm:text-lg rounded-full font-bold shadow-md">
+                  Go to Dashboard
+                </Button>
+              </Link>
+            </SignedIn>
+          </div>
         </div>
 
         {/* Stats Row */}
-        <div className="w-full max-w-4xl grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 mt-10 sm:mt-16 px-1 sm:px-0">
-          <Card className="glass-panel flex flex-col items-center py-8">
-            <div className="text-sm text-gray-500 mb-2">Total Services</div>
-            <div className="text-4xl font-bold text-primary">{statusData.totalServices}</div>
+        <div className="w-full max-w-5xl grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 mt-12 px-2 sm:px-0">
+          <Card className="glass-panel flex flex-col items-center py-6 sm:py-8">
+            <div className="text-sm text-gray-500 mb-1">Total Services</div>
+            <div className="text-3xl sm:text-4xl font-bold text-primary">{statusData.totalServices}</div>
           </Card>
-          <Card className="glass-panel flex flex-col items-center py-8">
-            <div className="text-sm text-gray-500 mb-2">Active Incidents</div>
-            <div className="text-4xl font-bold text-primary">{statusData.totalIncidents}</div>
+          <Card className="glass-panel flex flex-col items-center py-6 sm:py-8">
+            <div className="text-sm text-gray-500 mb-1">Active Incidents</div>
+            <div className="text-3xl sm:text-4xl font-bold text-primary">{statusData.totalIncidents}</div>
           </Card>
-          <Card className="glass-panel flex flex-col items-center py-8">
-            <div className="text-sm text-gray-500 mb-2">Uptime</div>
-            <div className="text-4xl font-bold text-primary">0%</div>
+          <Card className="glass-panel flex flex-col items-center py-6 sm:py-8">
+            <div className="text-sm text-gray-500 mb-1">Uptime</div>
+            <div className="text-3xl sm:text-4xl font-bold text-primary">0%</div>
           </Card>
         </div>
 
-        {/* Service Status Section Title */}
-        <div className="w-full max-w-4xl mt-16 mb-4">
-          <h2 className="text-2xl font-bold text-primary">Service Status</h2>
+        {/* Section Title */}
+        <div className="w-full max-w-5xl mt-16 mb-4 px-4 sm:px-0">
+          <h2 className="text-xl sm:text-2xl font-bold text-primary">Service Status</h2>
         </div>
-        {/* You can add a service status table or cards here if needed */}
       </main>
     </div>
   )
-} 
+}

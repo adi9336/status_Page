@@ -44,8 +44,8 @@ export default async function StatusPage({ params }: { params: { orgId: string }
   });
 
   return (
-    <main className="p-4 sm:p-6 max-w-4xl mx-auto">
-      <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">🔧 Service Status</h1>
+    <main className="p-2 sm:p-4 max-w-full mx-auto">
+      <h1 className="text-lg sm:text-2xl font-bold mb-4 sm:mb-6">🔧 Service Status</h1>
 
       {services.length === 0 && (
         <p className="text-gray-500 text-sm sm:text-base">No services found for this organization.</p>
@@ -53,7 +53,7 @@ export default async function StatusPage({ params }: { params: { orgId: string }
 
       <ul className="space-y-3 sm:space-y-4">
         {services.map((service) => (
-          <li key={service.id} className="p-4 sm:p-6 border rounded-lg bg-white shadow-sm">
+          <li key={service.id} className="p-2 sm:p-4 border rounded-lg bg-white shadow-sm">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 mb-2 sm:mb-0">
               <div className="font-semibold text-sm sm:text-base">{service.name}</div>
               <div className="text-sm sm:text-base">

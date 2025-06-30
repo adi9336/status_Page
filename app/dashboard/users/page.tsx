@@ -240,16 +240,7 @@ export default function UsersPage() {
   }
 
   return (
-    <div className="glass-card p-2 sm:p-4 md:p-8 min-h-screen w-full">
-      <div className="mb-4 sm:mb-6">
-        <button
-          onClick={() => router.push('/')}
-          className="inline-block bg-white hover:bg-blue-50 text-blue-600 font-semibold px-4 py-2 rounded-full transition-colors text-sm shadow border border-gray-200"
-        >
-          ← Return to Home
-        </button>
-      </div>
-      
+    <>
       <div className="mb-6 sm:mb-8">
         <h1 className="text-xl sm:text-2xl font-bold text-gray-800 flex items-center gap-2">
           <FaUser className="text-blue-400" /> User Management
@@ -542,6 +533,6 @@ export default function UsersPage() {
       {showMasterAdminPanel && (
         <MasterAdminPanel onClose={() => setShowMasterAdminPanel(false)} />
       )}
-    </div>
+    </>
   );
 } 

@@ -18,10 +18,7 @@ export default async function DashboardPage() {
   // Check if user exists in database
   const user = await prisma.user.findFirst({
     where: {
-      OR: [
-        { clerkId: userId },
-        { email: { equals: userId, mode: 'insensitive' } }
-      ],
+      clerkId: userId,
       isActive: true
     }
   });
@@ -40,5 +37,9 @@ export default async function DashboardPage() {
   }
 
   console.log('✅ User authorized - rendering dashboard');
-  return <DashboardClient />
+  return (
+    <div className="w-full p-2 sm:p-4 md:p-8">
+      <DashboardClient />
+    </div>
+  )
 }

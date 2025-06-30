@@ -68,16 +68,7 @@ export default function ServicesPage() {
   }
 
   return (
-    <div className="p-2 sm:p-4 md:p-8 bg-gray-100 min-h-screen w-full">
-      {/* Return Button */}
-      <div className="mb-4 sm:mb-6">
-        <button
-          onClick={() => router.push('/')}
-          className="inline-block bg-white hover:bg-blue-50 text-blue-600 font-semibold px-4 py-2 rounded-full transition-colors text-sm shadow border border-gray-200"
-        >
-          ← Return to Dashboard
-        </button>
-      </div>
+    <>
       <div className="mb-6 sm:mb-8">
         <h1 className="text-xl sm:text-2xl font-bold text-gray-800 flex items-center gap-2"><FaServer className="text-blue-500" /> Manage Services</h1>
         <p className="text-gray-500 text-sm sm:text-base mt-1">Add and manage your service status</p>
@@ -94,8 +85,7 @@ export default function ServicesPage() {
               placeholder="Enter service name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent text-sm"
-              style={{ color: '#000' }}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent text-sm text-black"
             />
           </div>
           <div className="w-full sm:w-auto sm:min-w-48">
@@ -103,13 +93,12 @@ export default function ServicesPage() {
             <select 
               value={status} 
               onChange={(e) => setStatus(e.target.value)} 
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent text-sm"
-              style={{ color: '#000' }}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent text-sm text-black"
             >
-              <option value="OPERATIONAL" style={{ color: '#000' }}>🟢 Operational</option>
-              <option value="DEGRADED" style={{ color: '#000' }}>🟠 Degraded</option>
-              <option value="PARTIAL_OUTAGE" style={{ color: '#000' }}>🟡 Partial Outage</option>
-              <option value="MAJOR_OUTAGE" style={{ color: '#000' }}>🔴 Major Outage</option>
+              <option value="OPERATIONAL" className="text-black">🟢 Operational</option>
+              <option value="DEGRADED" className="text-black">🟠 Degraded</option>
+              <option value="PARTIAL_OUTAGE" className="text-black">🟡 Partial Outage</option>
+              <option value="MAJOR_OUTAGE" className="text-black">🔴 Major Outage</option>
             </select>
           </div>
           <button 
@@ -142,6 +131,6 @@ export default function ServicesPage() {
           )}
         </div>
       </div>
-    </div>
+    </>
   )
 }

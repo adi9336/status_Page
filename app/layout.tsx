@@ -18,7 +18,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <head>
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         </head>
-        <body className={inter.className + ' bg-gradient-to-br from-white via-blue-50 to-pink-50'}>
+        <body className={inter.className + ' w-full min-h-screen bg-gradient-to-br from-white via-blue-50 to-pink-50'}>
 
           {children}
         </body>
