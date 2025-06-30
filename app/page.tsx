@@ -1,11 +1,11 @@
 'use client'
 
 import Link from 'next/link'
-import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton, useAuth } from '@clerk/nextjs'
+import { SignedIn, SignedOut, SignInButton, UserButton, useAuth } from '@clerk/nextjs'
 import { useState, useEffect } from 'react'
 import { Button } from "@/components/UI/Button";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/UI/Card";
-import { Badge } from "@/components/UI/Badge";
+import { Card } from "@/components/UI/Card";
+// Removed Badge import
 import { Activity } from "lucide-react";
 import { useRouter } from 'next/navigation';
 
@@ -81,7 +81,7 @@ export default function Home() {
       {/* Hero Section */}
       <main className="flex flex-col items-center justify-center px-4 py-16 md:py-24" style={{ paddingTop: '4rem' }}>
         <div className="max-w-2xl w-full flex flex-col items-center text-center gap-4">
-          <Badge variant="secondary" className="mb-2">For Teams &amp; Organizations</Badge>
+          {/* Removed Badge */}
           <h1 className="text-4xl md:text-5xl font-extrabold text-primary drop-shadow-lg mb-2">Team Status Dashboard</h1>
           <p className="text-lg text-gray-700 mb-6">Monitor your company's services and incidents in real time. Empower your team with transparency and control.</p>
           <SignedOut>
